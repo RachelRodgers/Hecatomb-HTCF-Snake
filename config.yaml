@@ -1,0 +1,17 @@
+---
+Patterns:
+  Read1Identifiers: ["_1", "_R1"]
+  Read2Identifiers: ["_2", "_R2"]
+  ReadExtensions: [".fq", ".fastq", ".fastq.gz"]
+
+Paths:
+  Reads: data
+  Databases: /scratch/ref/hecatomb_databases
+  Host: /scratch/ref/hecatomb_databases/human_masked
+
+DatabaseFiles:
+  Host: human_virus_masked.fasta.gz
+
+System:
+  # How much memory to allocate to java
+  Memory: -Xmx48g
