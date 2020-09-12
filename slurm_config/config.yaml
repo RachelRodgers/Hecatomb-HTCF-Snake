@@ -1,4 +1,4 @@
 jobs: 10
 cluster: "sbatch --mem={resources.mem_mb} -c {resources.cpus} -J {rule}_{wildcards} --mail-type=FAIL --mail-user=rachel.rodgers@wustl.edu"
-default-resources: [cpus=8, mem_mb=8000]
-resources: [cpus=16, mem_mb=64000]
+default-resources: [cpus=16, mem_mb=64000]
+resources: [cpus=32, mem_mb=64000]

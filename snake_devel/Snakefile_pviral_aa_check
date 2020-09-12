@@ -1,0 +1,177 @@
+#----- MMseqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
+
+"""
+Query probable viral sequences (viruses_seqs.fasta) against UniClust30 DB.
+This step is to remove false positives ("check").
+The end result of these steps is a checked viral sequence table and a checked
+viral alignment table.
+UniClust 30 is all UniProtKB entires clustered at 30%ID concatenated to
+Virus UniProt entires clustered at 99%.
+"""
+
+rule aacheck_create_querydb_from_viruses_seqs:
+	"""
+	Create a sequence db from the viruses_seqs.fasta file (probably non-phage viral sequences)
+	"""
+	input:
+		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.fasta")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB")
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs createdb {input} {output} --dont-shuffle 0 --dbtype 0
+		"""
+
+rule aacheck_taxonomy_search:
+	"""
+	Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
+	viral sequences) against the UniClust 30 protein DB
+	"""
+	input:
+		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		targetDB = TARGETAACHECK
+	output:
+		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult"),
+		tmp = os.path.join("results", "mmseqs_aa_checked_out", "tmp_aa_checked")
+	threads: 16
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs taxonomy \
+			{input.queryDB} {input.targetDB} {output.taxaDB} {output.tmp} \
+			-a \
+			-s 7 \
+			--search-type 2 \
+			--tax-output-mode 1 \
+			--threads {threads}
+		"""
+
+rule aacheck_convert_taxonomy_result:
+	"""
+	Convert the alignment results DB (taxonomyResult) to a human-readable format
+	"""
+	input:
+		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		targetDB = TARGETAACHECK,
+		alnDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8")
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs convertalis \
+			{input.queryDB} {input.targetDB} {input.alnDB} {output} \
+			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln" \
+			--threads 16
+		"""
+
+rule aacheck_compute_lca_on_taxonomy_result:
+	"""
+	Compute the LCA from the taxonomyResult search
+	"""
+	input:
+		targetDB = TARGETAACHECK,
+		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
+	threads: 16
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs lca \
+			{input.targetDB} {input.resultDB} {output} \
+			--tax-lineage 1 \
+			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
+			--threads 16
+		"""
+
+rule aacheck_extract_best_hit_from_taxonomy_result:
+	input:
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs filterdb {input} {output} --extract-lines 1
+		"""
+rule aacheck_convert_best_hit:
+		"""
+		Convert best hit from taxonomyResult (taxonomyResult.firsthit) to human readable
+		"""
+		input:
+			queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+			targetDB = TARGETAACHECK,
+			alignmentDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+		output:
+			os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
+		threads: 16
+		shell:
+			"""
+			module load {MMSEQS}
+			mmseqs convertalis {input.queryDB} {input.targetDB} {input.alignmentDB} {output} --threads {threads}
+			"""
+
+rule aacheck_create_taxonomy_table_from_lca:
+	"""
+	Create a TSV formatted taxonomy table from the LCA output
+	"""
+	input:
+		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
+	threads: 8
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs createtsv {input.queryDB} {input.resultDB} {output} \
+			--threads {threads}
+		"""
+
+rule aacheck_extract_nonphage_viral_lineages_for_R:
+	"""
+	Extract non-phage viral lineages from taxonomyResult.tsv and generate
+	taxonomy table for import into R as a phyloseq object
+	"""
+	input:
+		viruses = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
+		phagetax = PHAGE,
+		seqtable = os.path.join("results", "seqtable.fasta")
+	output:
+		tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv"),
+		list = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list"),
+		fa = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta"),
+		fx2tab = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab"),
+		taxtable = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
+	shell:
+		"""
+		module load {PULLSEQ}
+		module load {SEQKIT}
+		grep -v 'Bacteria:' {input.viruses} | grep 'Viruses:' | \
+			grep -v -f {input.phagetax} | cut -f1,5 | \
+			sed 's/:/\t/g' | \
+			sort -n -k1 > {output.tsv}
+		cut -f1 {output.tsv} > {output.list}
+		pullseq -i {input.seqtable} -n {output.list} -l 5000 > {output.fa}
+		seqkit fx2tab {output.fa} > {output.fx2tab}
+		join {output.fx2tab} {output.tsv} | \
+			awk -F ' ' '{ print $2,"\t",$3,"\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9 }' | \
+			sed '1isequence\tKingdom\tPhylum\tClass\tOrder\tFamily\tGenus\tSpecies' > \
+			{output.taxtable}
+		"""
+
+rule aacheck_extract_unclassified_lineages:
+	input:
+		viruses = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
+		seqtable = os.path.join("results", "seqtable.fasta")
+	output:
+		list = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list"),
+		fa = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
+	shell:
+		"""
+		module load {PULLSEQ}
+		grep -v 'Viruses:' {input.viruses} | cut -f1,5 | sed 's/:/\t/g' | sort -n -k1 > {output.list}
+		pullseq -i {input.seqtable} -n {output.list} -l 5000 > {output.fasta}
+		"""

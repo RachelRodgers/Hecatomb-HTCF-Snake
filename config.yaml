@@ -6,11 +6,21 @@ Patterns:
 
 Paths:
   Reads: data
-  Databases: /scratch/ref/hecatomb_databases
+  Contaminants: /scratch/ref/hecatomb_databases/contaminants
   Host: /scratch/ref/hecatomb_databases/human_masked
+  Bacteria: /scratch/ref/hecatomb_databases/bac_giant/unique_species
+  TargetMMseqsAA: /scratch/ref/hecatomb_databases/virus_uniprot/targetDB
+  TargetMMseqsNT: /scratch/ref/hecatomb_databases/refseq_virus_nt_UniVec_masked/nt.fnaDB
 
 DatabaseFiles:
-  Host: human_virus_masked.fasta.gz
+  Phage: /scratch/ref/hecatomb_databases/phage_taxonomic_lineages_2020.txt
+
+Tools:
+  BBTools: bbtools/38.26
+  R: r/3.6.3-python-3.6.5-java-11
+  Seqkit: seqkit/0.10.1
+  Pullseq: pullseq/1.0.2
+  MMseqs: mmseqs2/10-6d92c
 
 System:
   # How much memory to allocate to java

@@ -1,3 +1,9 @@
+"""
+Snakefile for running the Hecatomb pipeline on HTCF.
+
+Rachel Rodgers, Sep 2020
+""" 
+
 import os
 import sys
 sys.path.append("./scripts")
@@ -9,17 +15,30 @@ from hecatomb_helpers import *
 configfile: "config.yaml"
 
 # Hecatomb DB paths
-DBDIR = config["Paths"]["Databases"]
-CONPATH = os.path.join(DBDIR, "contaminants")
+CONPATH = config["Paths"]["Contaminants"]
 HOSTPATH = config["Paths"]["Host"]
+BACPATH = config["Paths"]["Bacteria"]
+AATARGET = config["Paths"]["TargetMMseqsAA"]
+NTTARGET = config["Paths"]["TargetMMseqsNT"]
 
 # Data paths
 READDIR = config["Paths"]["Reads"]
 
+# File paths
+PHAGE = config["DatabaseFiles"]["Phage"]
+
 # Java memory
 XMX = config["System"]["Memory"]
 
-# Rename input files if there are any to rename
+# Tools
+BBTOOLS = config["Tools"]["BBTools"]
+R = config["Tools"]["R"]
+SEQKIT = config["Tools"]["Seqkit"]
+PULLSEQ = config["Tools"]["Pullseq"]
+MMSEQS = config["Tools"]["MMseqs"]
+
+#----- Rename input files if there are any to rename -----#
+
 rename_files(config)
 
 # Pull sample names from the renamed R1 files in /data/renamed/ and store in a list
@@ -30,11 +49,20 @@ PATTERN_R2 = "{sample}_R2"
 
 #----- Snakemake Rules -----# 
 
+#local rules: all, clean, get_r1_singletons, get_r2_singletons, concat_r1, concat_r2, extract_sequences, extract_counts, create_sequence_table
+
 rule all:
 	input:
-		expand(os.path.join("QC", "step_7", PATTERN_R2 + ".s7.combined.out.fastq"), sample = SAMPLES)
+		os.path.join("results", "seqtable.all"),
+		os.path.join("results", "seqtable.tab2fx")
+rule clean:
+	shell:
+		"rm -rf ./QC/ ./clumped/"
+	
 				
 #----- Contaminant Removal -----#
+
+# Remove non-biological sequences, low-qual bases, host and (100% ID) bacterial sequences from virome-sequencied libraries.
 
 rule clumpify:
 	"""
@@ -49,7 +77,7 @@ rule clumpify:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		clumpify.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -75,7 +103,7 @@ rule remove_leftmost_primerB:
 	threads: 8
         shell:
                 """
-                module load bbtools/38.26
+                module load {BBTOOLS}
                 bbduk.sh \
                         in={input.r1} \
                         in2={input.r2} \
@@ -104,7 +132,7 @@ rule remove_3prime_contaminant:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -133,7 +161,7 @@ rule remove_primer_free_adapter:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -162,7 +190,7 @@ rule remove_adapter_free_primer:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -191,7 +219,7 @@ rule remove_vector_contamination:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -219,15 +247,14 @@ rule host_removal:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbmap.sh \
 			in={input.r1} \
 			in2={input.r2} \
+			path={input.reference} \
 			outu={output.unmapped} \
 			outm={output.mapped} \
-			semiperfectmode=t \
-			quickmatch fast ordered=t ow=t \
-			path={input.reference} \
+			semiperfectmode=t quickmatch fast ordered=t ow=t \
 			{XMX} \
 			t={threads}
 		"""
@@ -243,7 +270,7 @@ rule repair:
 		r2 = os.path.join("QC", "step_6", PATTERN_R2 + ".s6.out.fastq")
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		repair.sh \
 			in={input.unmapped} \
 			out={output.r1} \
@@ -266,7 +293,7 @@ rule trim_low_quality:
 	threads: 8
 	shell:
 		"""
-		module load bbtools/38.26
+		module load {BBTOOLS}
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -287,7 +314,7 @@ rule get_r1_singletons:
 		r1singletons = os.path.join("QC", "step_7", PATTERN_R1 + ".singletons.out.fastq")
 	shell:
 		"""
-		grep --no-group-separator -A 3 '1:N:' {input.singletons} > {output.r1singletons}
+		grep -A 3 '1:N:' {input.singletons} | sed '/^--$/d' > {output.r1singletons}
 		"""
 
 rule get_r2_singletons:
@@ -300,7 +327,7 @@ rule get_r2_singletons:
 		r2singletons = os.path.join("QC", "step_7", PATTERN_R2 + ".singletons.out.fastq")
 	shell:
 		"""
-		grep --no-group-separator -A 3 '2:N:' {input.singletons} > {output.r2singletons}
+		grep -A 3 '2:N:' {input.singletons} | sed '/^--$/d' > {output.r2singletons}
 		"""
 
 rule concat_r1:
@@ -332,3 +359,149 @@ rule concat_r2:
 		"""
 
 rule remove_bacteria:
+	"""
+	Step 8: Remove bacterial contaminants reserving viral and ambiguous sequences
+	"""
+	input:
+		r1combo = os.path.join("QC", "step_7", PATTERN_R1 + ".s7.combined.out.fastq"),
+		reference = BACPATH 
+	output:
+		mapped = os.path.join("QC", "step_8", "{sample}_bacterial.fastq"),
+		unmapped = os.path.join("QC", "step_8", "{sample}_viral_amb.fastq"),
+		scafstats = os.path.join("QC", "step_8", "{sample}_scafstats.txt")
+	threads: 16
+	resources:
+		 mem_mb=50000
+	shell:
+		"""
+		module load {BBTOOLS}
+		bbmap.sh \
+			in={input.r1combo} \
+			path={input.reference} \
+			outm={output.mapped} \
+			outu={output.unmapped} \
+			scafstats={output.scafstats} \
+			semiperfectmode=t quickmatch fast ordered=t ow=t \
+			{XMX} \
+			t={threads}
+		"""
+
+#----- Cluster Count -----#
+
+# Dereplicate and count sequences
+
+rule remove_exact_duplicates:
+	"""
+	Step 9: Remove exact duplicates
+	"""
+	input:
+		os.path.join("QC", "step_8", "{sample}_viral_amb.fastq")
+	output:
+		os.path.join("QC", "step_9", PATTERN_R1 + ".s9.deduped.out.fastq")
+	threads: 8
+	resources: 
+		mem_mb = 50000
+	shell:
+		"""
+		module load {BBTOOLS}
+		dedupe.sh \
+			in={input} \
+			out={output} \
+			ow=t ac=f \
+			{XMX} \
+			t={threads}
+		"""
+
+rule dereplicate:
+	"""
+	Step 10: Dereplicate
+	"""
+	input:
+		os.path.join("QC", "step_9", PATTERN_R1 + ".s9.deduped.out.fastq")
+	output:
+		fa = os.path.join("QC", "step_10", "{sample}_best.fasta"),
+		stats = os.path.join("QC", "step_10", "{sample}_stats.txt")
+	threads: 8
+	resources:
+		mem_mb = 50000
+	shell:
+		"""
+		module load {BBTOOLS}
+		dedupe.sh \
+			in={input} \
+			out={output.fa} \
+			csf={output.stats} \
+			ow=t s=4 rnc=t pbr=t \
+			{XMX} \
+			t={threads}
+		"""
+
+rule extract_sequence_counts:
+	"""
+	Step 11: Extract sequences and counts for seqtable (count table)
+	"""
+	input:
+		os.path.join("QC", "step_10", "{sample}_best.fasta")
+	output:
+		out = os.path.join("QC", "step_11", "{sample}_reformatted.fasta")
+	resources:
+		mem_mb = 50000
+
+	shell:
+		"""
+		module load {BBTOOLS}
+		reformat.sh \
+			in={input} \
+			out={output} \
+			deleteinput=t fastawrap=0 ow=t \
+			{XMX}
+		""" 
+
+rule extract_sequences:
+	"""
+	Step 12: Extract sequence lines from sample_reformatted.fasta
+	"""
+	input:
+		os.path.join("QC", "step_11", "{sample}_reformatted.fasta")
+	output:
+		os.path.join("QC", "clustered", "{sample}_seqs.txt")
+	shell:
+		"grep -v '>' {input} | sed '1i sequence' > {output}"
+
+rule extract_counts:
+	"""
+	Step 13: Extract counts from dedupe stats file
+	"""
+	input:
+		os.path.join("QC", "step_10", "{sample}_stats.txt")
+	output:
+		os.path.join("QC", "clustered", "{sample}_counts.txt")
+	shell:
+		"cut -f 2 {input} | sed '1s/size/{wildcards.sample}/' > {output}"
+
+rule create_sequence_table:
+	"""
+	Step 14: Create sequence table
+	"""
+	input:
+		seqs = os.path.join("QC", "clustered", "{sample}_seqs.txt"),
+		counts = os.path.join("QC", "clustered", "{sample}_counts.txt")
+	output:
+		os.path.join("QC", "clustered", "{sample}_seqtable.txt")
+	shell:
+		"paste {input.seqs} {input.counts} > {output}"
+
+rule seqtable_merge:
+	"""
+	Join sequence tables across all samples
+	"""
+	input:
+		expand(os.path.join("QC", "clustered", "{sample}_seqtable.txt"), sample = SAMPLES)
+	output:
+		seqtable = os.path.join("results", "seqtable.all"),
+		tab2fa = os.path.join("results", "seqtable.tab2fx")
+	shell:
+		"""
+		module load {R}
+		./scripts/seqtable_merge.R
+		"""
