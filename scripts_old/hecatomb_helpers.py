@@ -21,7 +21,7 @@ def build_search_patterns(read_pattern_list, read_extension_list):
         return(search_pattern_list)
 
 def rename_files(config):
-
+	
 	READDIR = config["Paths"]["Reads"]
 	
 	# If there are valid read files sitting in /data, rename them for consistency:
@@ -102,5 +102,8 @@ def rename_files(config):
 			if not os.path.exists(READDIR + "/archived"):
 				os.makedirs(READDIR + "/archived")
 			shutil.move(READDIR + "/" + inputFileName, READDIR + "/archived/" + inputFileName)
+	
+	# Pull sample names from the renamed R1 files and store in list
+
 
 
