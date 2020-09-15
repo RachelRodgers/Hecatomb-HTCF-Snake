@@ -62,7 +62,8 @@ rule all:
 	input:
 		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"),
 		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.fasta"),
-		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
+		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta"),
+		os.path.join("results", "mmseqs_aa_out", "aln.m8")
 
 rule clean:
 	shell:

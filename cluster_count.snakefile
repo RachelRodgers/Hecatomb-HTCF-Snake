@@ -18,8 +18,9 @@ rule remove_exact_duplicates:
 		module load {BBTOOLS}
 		dedupe.sh \
 			in={input} \
+			ow=t \
 			out={output} \
-			ow=t ac=f \
+			ac=f \
 			{XMX} \
 			t={threads}
 		"""

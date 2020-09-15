@@ -12,5 +12,5 @@ rule seqtable_merge:
 	shell:
 		"""
 		module load {R}
-		./scripts/seqtable_merge.R
+		Rscript ./scripts/seqtable_merge.R
 		"""

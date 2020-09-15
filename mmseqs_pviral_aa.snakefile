@@ -35,7 +35,7 @@ rule aa_create_querydb_from_seqtable:
 		mmseqs createdb {input} {output} --dont-shuffle 0 --dbtype 0
 		"""
 
-rule aa_taxonomy_search:
+rule aa_taxonomy_search_alignment:
 	"""
 	Query the sequences in seqtable_queryDB (from the seqtable generated from all samples)
 	against the virus uniprotDB to generate taxonomic assignments to the sequences using LCA.
@@ -45,9 +45,10 @@ rule aa_taxonomy_search:
 		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET
 	params:
-                taxaDB = os.path.join("results", "mmseqs_aa_out", "taxonomyResult")
+		taxaDB = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
 	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_out", "tmp_aa"))
+		tmp = directory(os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "tmp_aa")),
+		idx = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
 	shell:
 		"""
@@ -62,15 +63,16 @@ rule aa_taxonomy_search:
 			--tax-output-mode 1
 		"""
 
-rule aa_convert_taxonomy_result:
+rule aa_convert_taxonomy_alignment_results:
 	"""
 	Convert the alignment results DB (taxonomyResult) to a human-readable format
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET,
+		idx = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
 	params:
-		alnDB = os.path.join("results", "mmseqs_aa_out", "taxonomyResult")
+		alnDB = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
 	output:
 		os.path.join("results", "mmseqs_aa_out", "aln.m8")
 	shell:
@@ -81,32 +83,42 @@ rule aa_convert_taxonomy_result:
 			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln"
 		"""
 
-rule aa_compute_lca_on_taxonomy_result:
+rule aa_taxonomy_search_lca:
 	"""
-	Compute the LCA from the taxonomyResult search
+	Query the sequences in seqtable_queryDB (from the seqtable generated from all samples)
+	against the virus uniprotDB to generate taxonomic assignments to the sequences using LCA.
+	This is a translated search and will output LCA (taxonomy).
 	"""
 	input:
+		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_out", "taxonomyResult"),
-		taxaDB = os.path.join("results", "mmseqs-aa_out", "lcaDB")
+		taxaDB = os.path.join("results", "mmseqs_aa_out", "lcaDB")
+	output:
+		tmp = directory(os.path.join("results", "mmseqs_aa_out", "tmp_aa")),
+		idx = os.path.join("results", "mmseqs_aa_out", "lcaDB.index")
 	threads: 16
 	shell:
 		"""
 		module load {MMSEQS}
-		mmseqs lca \
-			{input.targetDB} {params.resultDB} {params.taxaDB} \
-			--tax-lineage 1 \
-			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
-			--threads {threads}
+		mmseqs taxonomy \
+			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
+			-a \
+			--start-sens 1 \
+			--sens-steps 3 \
+			-s 7 \
+			--search-type 2 \
+                        --tax-lineage true \
+			--lca-ranks "superkingdom:phylum:class:order:family:genus:species"
 		"""
 
-rule aa_create_taxonomy_table_from_lca:
+rule aa_convert_taxonomy_lca_results:
 	"""
-	Create a TSV formatted taxonomy table from the LCA output
+	Create a TSV formatted taxonomy table from the taxonomy LCA output
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
+		idx = os.path.join("results", "mmseqs_aa_out", "lcaDB.index")
 	params:
 		resultDB = os.path.join("results", "mmseqs_aa_out", "lcaDB")
 	output:
