@@ -50,13 +50,13 @@ PATTERN_R2 = "{sample}_R2"
 #----- Snakemake Workflow -----# 
 
 #----- Contaminant Removal -----#
-include: "contaminant_removal.snakefile"
+include: "contaminant_removal.smk"
 #----- Cluster Count -----#
-include: "cluster_count.snakefile"
+include: "cluster_count.smk"
 #----- Merge Sequencing Tables -----#
-include: "seqtable_merge.snakefile"
+include: "seqtable_merge.smk"
 #----- MMseqs2 Query Viral Seqs Against AA DB -----#
-include: "mmseqs_pviral_aa.snakefile"
+include: "mmseqs_pviral_aa.smk"
 
 rule all:
 	input:

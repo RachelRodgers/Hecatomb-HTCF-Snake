@@ -39,21 +39,24 @@ rule remove_leftmost_primerB:
 		r2 = os.path.join("QC", "step_1", PATTERN_R2 + ".s1.out.fastq"),
                 stats = os.path.join("QC", "step_1", "{sample}.s1.stats")
 	threads: 8
-        shell:
-                """
-                module load {BBTOOLS}
-                bbduk.sh \
-                        in={input.r1} \
-                        in2={input.r2} \
-                        ref={input.primers} \
-                        out={output.r1} \
-                        out2={output.r2} \
-                        stats={output.stats} \
-                        k=16 hdist=1 mink=11 ktrim=l restrictleft=20 \
-                        removeifeitherbad=f \
-                        trimpolya=10 ordered=t rcomp=f ow=t \
-			t={threads}
-                """
+    shell:
+		"""
+		module load {BBTOOLS}
+		bbduk.sh \
+				in={input.r1} \
+				in2={input.r2} \
+				ref={input.primers} \
+				out={output.r1} \
+				out2={output.r2} \
+				stats={output.stats} \
+				k=16 hdist=1 mink=11 ktrim=l restrictleft=20 \
+				removeifeitherbad=f \
+				trimpolya=10 \
+				ordered=t \
+				rcomp=f \
+				ow=t \
+				t={threads}
+		"""
 
 rule remove_3prime_contaminant:
 	"""
@@ -80,7 +83,9 @@ rule remove_3prime_contaminant:
 			stats={output.stats} \
 			k=16 hdist=1 mink=11 ktrim=r \
 			removeifeitherbad=f \
-			ordered=t rcomp=f ow=t \
+			ordered=t \
+			rcomp=f \
+			ow=t \
 			threads={threads}
 		"""
 
@@ -109,7 +114,9 @@ rule remove_primer_free_adapter:
 			stats={output.stats} \
 			k=16 hdist=1 mink=10 ktrim=r \
 			removeifeitherbad=f \
-			ordered=t rcomp=t ow=t \
+			ordered=t \
+			rcomp=t \
+			ow=t \
 			threads={threads}
 		"""
 
@@ -167,7 +174,9 @@ rule remove_vector_contamination:
 			out={output.r1} \
 			out2={output.r2} \
 			stats={output.stats} \
-			k=31 hammingdistance=1 ordered=t ow=t \
+			k=31 hammingdistance=1 \
+			ordered=t \
+			ow=t \
 			t={threads}
 		"""
 
@@ -191,11 +200,14 @@ rule host_removal:
 		bbmap.sh \
 			in={input.r1} \
 			in2={input.r2} \
-			path={input.reference} \
 			outu={output.unmapped} \
 			outm={output.mapped} \
-			semiperfectmode=t quickmatch fast ordered=t ow=t \
+			semiperfectmode=t \
+			quickmatch fast \
+			ordered=t \
+			path={input.reference} \
 			{XMX} \
+			ow=t \
 			t={threads}
 		"""
 
@@ -228,7 +240,7 @@ rule trim_low_quality:
 	output:
 		r1 = os.path.join("QC", "step_7", PATTERN_R1 + ".s7.out.fastq"),
 		r2 = os.path.join("QC", "step_7", PATTERN_R2 + ".s7.out.fastq"),
-		singletons = os.path.join("QC", "step_7", "{sample}.singletons.s7.out.fastq"),
+		singletons = os.path.join("QC", "step_7", "{sample}_singletons.s7.out.fastq"),
 		stats = os.path.join("QC", "step_7", "{sample}.s7.stats")
 	threads: 8
 	shell:
@@ -241,7 +253,10 @@ rule trim_low_quality:
 			out2={output.r2} \
 			outs={output.singletons} \
 			stats={output.stats} \
-			qtrim=4 trimq=20 maxns=2 minlength=50 ordered=t \
+			qtrim=r trimq=20 \
+			maxns=2 minlength=50 \
+			ordered=t \
+			ow=t \
 			threads={threads}
 		"""
 rule get_r1_singletons:
@@ -249,9 +264,9 @@ rule get_r1_singletons:
 	Step 7b: Split R1 singletons
 	"""
 	input:
-		singletons = os.path.join("QC", "step_7", "{sample}.singletons.s7.out.fastq")
+		singletons = os.path.join("QC", "step_7", "{sample}_singletons.s7.out.fastq")
 	output:
-		r1singletons = os.path.join("QC", "step_7", PATTERN_R1 + ".singletons.out.fastq")
+		r1singletons = os.path.join("QC", "step_7", "{sample}_singletons_R1.out.fastq")
 	shell:
 		"""
 		grep -A 3 '1:N:' {input.singletons} | sed '/^--$/d' > {output.r1singletons}
@@ -264,7 +279,7 @@ rule get_r2_singletons:
 	input:
 		singletons = os.path.join("QC", "step_7", "{sample}.singletons.s7.out.fastq")
 	output:
-		r2singletons = os.path.join("QC", "step_7", PATTERN_R2 + ".singletons.out.fastq")
+		r2singletons = os.path.join("QC", "step_7", "{sample}_singletons_R2.out.fastq")
 	shell:
 		"""
 		grep -A 3 '2:N:' {input.singletons} | sed '/^--$/d' > {output.r2singletons}
@@ -276,7 +291,7 @@ rule concat_r1:
 	"""
 	input:
 		r1 = os.path.join("QC", "step_7", PATTERN_R1 + ".s7.out.fastq"),
-		r1singletons = os.path.join("QC", "step_7", PATTERN_R1 + ".singletons.out.fastq")
+		r1singletons = os.path.join("QC", "step_7", "{sample}_singletons_R1.out.fastq")
 	output:
 		r1combo = os.path.join("QC", "step_7", PATTERN_R1 + ".s7.combined.out.fastq")
 	shell:
@@ -290,7 +305,7 @@ rule concat_r2:
 	"""
 	input:
                 r2 = os.path.join("QC", "step_7", PATTERN_R2 + ".s7.out.fastq"),
-                r2singletons = os.path.join("QC", "step_7", PATTERN_R2 + ".singletons.out.fastq")
+                r2singletons = os.path.join("QC", "step_7", "{sample}_singletons_R2.out.fastq")
 	output:
 		r2combo = os.path.join("QC", "step_7", PATTERN_R2 + ".s7.combined.out.fastq")
 	shell:
