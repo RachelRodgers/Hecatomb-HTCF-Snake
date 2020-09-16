@@ -1,39 +1,40 @@
 #!/usr/bin/env Rscript
 
-# Load libraries
+# Check for necessary libraries
+if (!require(tidyverse)) {
+  install.packages("tidyverse")
+}
+
+# Load libraries (will fail if install failed)
 library("tidyverse")
 
 # Read seqtables
-
 print("Reading seq tables")
 
-files <- list.files(path = "./QC/clustered/", pattern = "*_seqtable.txt", full.names = TRUE)
+files <- list.files(path = "./QC/step_8/clustered/", pattern = "*_seqtable.txt", full.names = TRUE)
 
 # Reduce seqtables to a single table
-
 print("Reducing seqtables into single table")
 
 seqtable.all <- files %>%
   map(read_tsv) %>%
   reduce(full_join, by = "sequence") %>%
-  mutate(id = row_number() - 1) %>%
+  mutate(id = row_number() - 1) %>% # changing to base 0 for downstream compatability
   select(id, everything()) %>%
   mutate_if(is.numeric, as.integer)
 
 # Write count table
-
 print("Writing count table")
 
 dir.create(path = "results", showWarnings = FALSE)
 write_tsv(seqtable.all, path = "./results/seqtable.all", col_names=TRUE)
 
 # Write	tabular	fasta (tab2fx)
-
 print("Writing tabular fasta")
 
 seqs <- tibble(`sequence` = seqtable.all$sequence)
 seqs.df <- seqs %>%
-	mutate(id = row_number() - 1) %>%
+	mutate(id = row_number() - 1) %>% # changing to base 0 for downstream compatability
 	select(id, everything()) %>%
 	mutate_if(is.numeric, as.integer)
 write_tsv(seqs.df, "./results/seqtable.tab2fx", col_names = FALSE)

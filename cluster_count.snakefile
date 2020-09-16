@@ -4,12 +4,12 @@
 
 rule remove_exact_duplicates:
 	"""
-	Step 9: Remove exact duplicates
+	Step 1: Remove exact duplicates
 	"""
 	input:
 		os.path.join("QC", "step_8", "{sample}_viral_amb.fastq")
 	output:
-		os.path.join("QC", "step_9", PATTERN_R1 + ".s9.deduped.out.fastq")
+		os.path.join("QC", "step_8", "clustered", PATTERN_R1 + ".s8.deduped.out.fastq")
 	threads: 8
 	resources: 
 		mem_mb = 50000
@@ -27,13 +27,13 @@ rule remove_exact_duplicates:
 
 rule dereplicate:
 	"""
-	Step 10: Dereplicate
+	Step 2a: Dereplicate
 	"""
 	input:
-		os.path.join("QC", "step_9", PATTERN_R1 + ".s9.deduped.out.fastq")
+		os.path.join("QC", "step_8", "clustered", PATTERN_R1 + ".s8.deduped.out.fastq")
 	output:
-		fa = os.path.join("QC", "step_10", "{sample}_best.fasta"),
-		stats = os.path.join("QC", "step_10", "{sample}_stats.txt")
+		fa = os.path.join("QC", "step_8", "clustered", "{sample}_best.fasta"),
+		stats = os.path.join("QC", "step_8", "clustered", "{sample}_stats.txt")
 	threads: 8
 	resources:
 		mem_mb = 50000
@@ -42,64 +42,68 @@ rule dereplicate:
 		module load {BBTOOLS}
 		dedupe.sh \
 			in={input} \
-			out={output.fa} \
+			ow=t \
+			s=4 \
+			rnc=t \
+			pbr=t \
 			csf={output.stats} \
-			ow=t s=4 rnc=t pbr=t \
+			out={output.fa} \
 			{XMX} \
 			t={threads}
 		"""
 
-rule extract_sequence_counts:
+rule reformat:
 	"""
-	Step 11: Extract sequences and counts for seqtable (count table)
+	Step 3a: Reformat
 	"""
 	input:
-		os.path.join("QC", "step_10", "{sample}_best.fasta")
+		os.path.join("QC", "step_8", "clustered", "{sample}_best.fasta")
 	output:
-		out = os.path.join("QC", "step_11", "{sample}_reformatted.fasta")
+		out = os.path.join("QC", "step_8", "clustered", "{sample}_reformatted.fasta")
 	resources:
 		mem_mb = 50000
-
 	shell:
 		"""
 		module load {BBTOOLS}
 		reformat.sh \
 			in={input} \
 			out={output} \
-			deleteinput=t fastawrap=0 ow=t \
+			deleteinput=t \
+			fastawrap=0 \
+			ow=t \
 			{XMX}
 		""" 
 
 rule extract_sequences:
 	"""
-	Step 12: Extract sequence lines from sample_reformatted.fasta
+	Step 3b: Extract sequence lines from sample_reformatted.fasta
 	"""
 	input:
-		os.path.join("QC", "step_11", "{sample}_reformatted.fasta")
+		os.path.join("QC", "step_8", "clustered", "{sample}_reformatted.fasta")
 	output:
-		os.path.join("QC", "clustered", "{sample}_seqs.txt")
+		os.path.join("QC", "step_8", "clustered", "{sample}_seqs.txt")
 	shell:
 		"grep -v '>' {input} | sed '1i sequence' > {output}"
 
 rule extract_counts:
 	"""
-	Step 13: Extract counts from dedupe stats file
+	Step 3c: Extract counts from dedupe stats file
 	"""
 	input:
-		os.path.join("QC", "step_10", "{sample}_stats.txt")
+		os.path.join("QC", "step_8", "clustered", "{sample}_stats.txt")
 	output:
-		os.path.join("QC", "clustered", "{sample}_counts.txt")
+		os.path.join("QC", "step_8", "clustered", "{sample}_counts.txt")
 	shell:
 		"cut -f 2 {input} | sed '1s/size/{wildcards.sample}/' > {output}"
 
 rule create_sequence_table:
 	"""
-	Step 14: Create sequence table
+	Step 3d: Create sequence table
 	"""
 	input:
-		seqs = os.path.join("QC", "clustered", "{sample}_seqs.txt"),
-		counts = os.path.join("QC", "clustered", "{sample}_counts.txt")
+		seqs = os.path.join("QC", "step_8", "clustered", "{sample}_seqs.txt"),
+		counts = os.path.join("QC", "step_8", "clustered", "{sample}_counts.txt")
 	output:
-		os.path.join("QC", "clustered", "{sample}_seqtable.txt")
+		os.path.join("QC", "step_8", "clustered", "{sample}_seqtable.txt")
 	shell:
 		"paste {input.seqs} {input.counts} > {output}"
