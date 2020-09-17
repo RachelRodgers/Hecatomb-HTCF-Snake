@@ -1,5 +1,9 @@
+
+#----- Function to load or install require packages -----#
+
 TryInstall <- function(reqPackage) {
   # Attempts to install required package to a path in .libPaths.
+  # Will continue trying paths until one works or all fail.
   #
   # Args:
   #   reqPackage: A required package
@@ -13,7 +17,7 @@ TryInstall <- function(reqPackage) {
     for (i in 1:length(systemLibPaths)) { # try installing in each path till it works
       currPath <- systemLibPaths[i]
       
-      tryCatch({
+      tryCatch({ # install + load
         cat("Attempting to install", reqPackage, "to", currPath, "\n")
         install.packages(reqPackage, lib = currPath, verbose = FALSE, quiet = TRUE)
         require(reqPackage, character.only = TRUE, quietly = TRUE)
@@ -23,10 +27,11 @@ TryInstall <- function(reqPackage) {
           message("Problem with package installation. Attempting installation again...\n")
           
         } else {
-          stop(cat("Package", reqPackage, "could not be automatically installed into R. Please install manually.\n"),
+          stop(cat("FATAL: Package", reqPackage, "could not be automatically installed into R. Please install manually.\n"),
                call. = FALSE)
         }
       }, error = function(e) "error")
     }
-  }
+  } else { # loads package if available
+    require(reqPackage, character.only = TRUE)}
 }
