@@ -13,21 +13,21 @@ TryInstall <- function(reqPackage) {
   
   systemLibPaths <- .libPaths()
   
-  if (!require(reqPackage, character.only = TRUE)) { # if not installed
+  if (!require(reqPackage, character.only = TRUE, quietly = TRUE)) { # if not installed
     for (i in 1:length(systemLibPaths)) { # try installing in each path till it works
       currPath <- systemLibPaths[i]
       
       tryCatch({ # install + load
-        cat("Attempting to install", reqPackage, "to", currPath, "\n")
+        cat("\nAttempting to install", reqPackage, "to", currPath, "\n")
         install.packages(reqPackage, lib = currPath, verbose = FALSE, quiet = TRUE)
         require(reqPackage, character.only = TRUE, quietly = TRUE)
         
       }, warning = function(w) {
         if (i < length(systemLibPaths)) {
-          message("Problem with package installation. Attempting installation again...\n")
+          message("\nProblem with package installation. Attempting installation again...\n")
           
         } else {
-          stop(cat("FATAL: Package", reqPackage, "could not be automatically installed into R. Please install manually.\n"),
+          stop(cat("\nFATAL: Package", reqPackage, "could not be automatically installed into R. Please install manually.\n\n"),
                call. = FALSE)
         }
       }, error = function(e) "error")

@@ -1,26 +1,33 @@
 #!/usr/bin/env Rscript
 
+# seqtable_merge.R
+
 #----- Load or install required packages -----#
+
 source("./scripts/hecatomb_helpers.R")
+
+options(warn = -1) # suppress warning messages for clarity
 
 requiredPackages <- "tidyverse"
 
 for (package in requiredPackages) {
   TryInstall(package)
   
-  if (!require(package, character.only = )) {
-    stop(cat("Problem loading R package", package, "\n"),
+  if (!require(package, character.only = TRUE, quietly = TRUE)) {
+    stop(cat("FATAL: Problem loading R package:", package, "(seqtable_merge.R)\n\n"),
          call. = FALSE)
     }
   }
 
 #----- Collect seqtables -----#
+
 print("seqtable_merge: Reading sequencing tables.\n")
 
 files <- list.files(path = "./QC/step_8/clustered/", 
                     pattern = "*_seqtable.txt", full.names = TRUE)
 
 #----- Reduce seqtables to a single table -----#
+
 print("seqtable merge: Reducing sample sequencing tables into single table.\n")
 
 seqtable.all <- files %>%
@@ -31,13 +38,15 @@ seqtable.all <- files %>%
   mutate_if(is.numeric, as.integer)
 
 #----- Write count table -----#
+
 print("seqtable merge: Writing count table.\n")
 
 dir.create(path = "./results", showWarnings = FALSE)
 
 write_tsv(seqtable.all, path = "./results/seqtable.all", col_names=TRUE)
 
-#----- Write	tabular	fasta (tab2fx) -----#
+#----- Write tabular fasta (tab2fx) -----#
+
 print("seqtable merge: Writing tabular fasta.\n")
 
 seqs <- tibble(`sequence` = seqtable.all$sequence)
@@ -50,6 +59,7 @@ seqs.df <- seqs %>%
 write_tsv(seqs.df, "./results/seqtable.tab2fx", col_names = FALSE)
 
 #----- Save session information -----#
+
 print("seqtable merge: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
