@@ -41,6 +41,8 @@ MMSEQS = config["Tools"]["MMseqs"]
 
 rename_files(config)
 
+#----- Collect the Input Files -----#
+
 # Pull sample names from the renamed R1 files in /data/renamed/ and store in a list
 SAMPLES, = glob_wildcards(os.path.join(READDIR, "renamed", "{sample}_R1.fastq.gz"))
 

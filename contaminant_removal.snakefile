@@ -24,7 +24,7 @@ rule clumpify:
 			reorder=a \
 			ow=t \
 			t={threads}
-		""" 
+		"""
 
 rule remove_leftmost_primerB:
 	"""
@@ -43,19 +43,19 @@ rule remove_leftmost_primerB:
 		"""
 		module load {BBTOOLS}
 		bbduk.sh \
-				in={input.r1} \
-				in2={input.r2} \
-				ref={input.primers} \
-				out={output.r1} \
-				out2={output.r2} \
-				stats={output.stats} \
-				k=16 hdist=1 mink=11 ktrim=l restrictleft=20 \
-				removeifeitherbad=f \
-				trimpolya=10 \
-				ordered=t \
-				rcomp=f \
-				ow=t \
-				t={threads}
+			in={input.r1} \
+			in2={input.r2} \
+			ref={input.primers} \
+			out={output.r1} \
+			out2={output.r2} \
+			stats={output.stats} \
+			k=16 hdist=1 mink=11 ktrim=l restrictleft=20 \
+			removeifeitherbad=f \
+			trimpolya=10 \
+			ordered=t \
+			rcomp=f \
+			ow=t \
+			t={threads}
 		"""
 
 rule remove_3prime_contaminant:
@@ -191,9 +191,9 @@ rule host_removal:
 	output:
 		unmapped = os.path.join("QC", "step_6", "{sample}_unmapped.s6.out.fastq"),
 		mapped = os.path.join("QC", "step_6", "{sample}_hostmapped.s6.out.fastq")
+	threads: 8
 	resources:
 		mem_mb=50000
-	threads: 8
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -326,7 +326,7 @@ rule remove_bacteria:
 		scafstats = os.path.join("QC", "step_8", "{sample}_scafstats.txt")
 	threads: 16
 	resources:
-		 mem_mb=50000
+		mem_mb=50000
 	shell:
 		"""
 		module load {BBTOOLS}
