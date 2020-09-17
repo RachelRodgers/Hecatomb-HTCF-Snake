@@ -1,13 +1,17 @@
 #!/usr/bin/env Rscript
 
 #----- Load or install required packages -----#
-
 source("./scripts/hecatomb_helpers.R")
 
 requiredPackages <- "tidyverse"
 
 for (package in requiredPackages) {
   TryInstall(package)
+  
+  if (!require(package, character.only = )) {
+    stop(cat("Problem loading R package", package, "\n"),
+         call. = FALSE)
+    }
   }
 
 #----- Collect seqtables -----#
