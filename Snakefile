@@ -19,6 +19,7 @@ CONPATH = config["Paths"]["Contaminants"]
 HOSTPATH = config["Paths"]["Host"]
 BACPATH = config["Paths"]["Bacteria"]
 AATARGET = config["Paths"]["TargetMMseqsAA"]
+AATARGETCHECK = config["Paths"]["TargetMMseqsAACheck"]
 NTTARGET = config["Paths"]["TargetMMseqsNT"]
 
 # Data paths
@@ -59,13 +60,20 @@ include: "cluster_count.snakefile"
 include: "seqtable_merge.snakefile"
 #----- MMseqs2 Query Viral Seqs Against AA DB -----#
 include: "mmseqs_pviral_aa.snakefile"
+#----- MMseqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
+include: "mmseqs_pviral_aa_check.snakefile"
+
 
 rule all:
 	input:
 		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"),
-		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.fasta"),
 		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta"),
-		os.path.join("results", "mmseqs_aa_out", "aln.m8")
+		os.path.join("results", "mmseqs_aa_out", "aln.m8"),
+		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8"),
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8"),
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
+		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
 
 rule clean:
 	shell:

@@ -60,10 +60,11 @@ rule aa_taxonomy_search_alignment:
 			--sens-steps 3 \
 			-s 7 \
 			--search-type 2 \
-			--tax-output-mode 1
+			--tax-output-mode 1 \
+			--threads {threads}
 		"""
 
-rule aa_convert_taxonomy_alignment_results:
+rule aa_convert_taxonomy_alignment_results_to_m8:
 	"""
 	Convert the alignment results DB (taxonomyResult) to a human-readable format
 	"""
@@ -112,7 +113,7 @@ rule aa_taxonomy_search_lca:
 			--lca-ranks "superkingdom:phylum:class:order:family:genus:species"
 		"""
 
-rule aa_convert_taxonomy_lca_results:
+rule aa_convert_taxonomy_lca_results_to_tsv:
 	"""
 	Create a TSV formatted taxonomy table from the taxonomy LCA output
 	"""
@@ -139,6 +140,9 @@ rule aa_extract_all_potential_viruses:
 		os.path.join("results", "mmseqs_aa_out", "taxonomyResult.tsv")
 	output:
 		os.path.join("results", "mmseqs_aa_out", "all_viruses_table.tsv")
+	resources:
+        cpus=1,
+        mem_mb=1000
 	shell:
 		"""
 		grep 'Viruses:' {input} | cut -f1,5 | sed 's/phi14:2/phi14_2/g' | sed 's/:/\t/g' | sort -n -k1 > {output}
@@ -155,8 +159,8 @@ rule aa_extract_phage_lineages_for_R_grep:
 	output:
 		os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
 	resources:
-            cpus=1,
-            mem_mb=1000
+        cpus=1,
+        mem_mb=1000
 	shell:
 		"grep -f {input.phagetax} {input.viruses} > {output}"
 
@@ -180,7 +184,7 @@ rule aa_extract_phage_lineages_for_R_pullseq:
 	shell:
 		"""
 		module load {PULLSEQ} 
-            pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+        pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule aa_extract_phage_lineages_for_R_seqkit:
@@ -191,7 +195,7 @@ rule aa_extract_phage_lineages_for_R_seqkit:
 	shell:
 		"""
 		module load {SEQKIT}
-            seqkit fx2tab {input} > {output}
+        seqkit fx2tab {input} > {output}
 		"""
 
 rule aa_extract_phage_lineages_for_R_join:
@@ -200,6 +204,9 @@ rule aa_extract_phage_lineages_for_R_join:
 		table = os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
 	output:
 		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv")
+	resources:
+        cpus=1,
+        mem_mb=1000
 	shell:
 		"""
 		join {input.seqs} {input.table} | \
