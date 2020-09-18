@@ -67,7 +67,7 @@ rule aacheck_convert_taxonomy_result_to_m8:
 		"""
 		module load {MMSEQS}
 		mmseqs convertalis \
-			{input.queryDB} {input.targetDB} {input.alnDB} {output} \
+			{input.queryDB} {input.targetDB} {params.alnDB} {output} \
 			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln" \
 			--threads 16
 		"""
@@ -105,13 +105,14 @@ rule aacheck_extract_best_hit_from_taxonomy_result:
 	input:
 		os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
-	output:
+		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB"),
 		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+	output:
+		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
 	shell:
 		"""
 		module load {MMSEQS}
-		mmseqs filterdb {params.resultDB} {output.bestResultDB} --extract-lines 1
+		mmseqs filterdb {params.resultDB} {params.bestResultDB} --extract-lines 1
 		"""
 
 rule aacheck_convert_best_hit:
@@ -121,7 +122,7 @@ rule aacheck_convert_best_hit:
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK,
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
 	params:
 		alignmentDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
 	output:
@@ -164,14 +165,10 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 		cpus=1,
 		mem_mb=1000
 	output:
-		tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv"),
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv"),
 	shell:
 		"""
-		grep -v 'Bacteria:' {input.viruses} | \ 
-			grep 'Viruses:' | \
-			grep -v -f {input.phagetax} | cut -f1,5 | \
-			sed 's/:/\t/g' | \
-			sort -n -k1 > {output.tsv}
+		grep -v 'Bacteria:' {input.viruses} | grep 'Viruses:' | grep -v -f {input.phagetax} | cut -f1,5 | sed 's/:/\t/g' | sort -n -k1 > {output}
 		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_cut:
@@ -203,7 +200,7 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
 	shell:
-		"seqkit fx2tab {output.fa} > {output.fx2tab}"
+		"seqkit fx2tab {input} > {output}"
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 	input:
@@ -214,7 +211,7 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 	shell:
 		"""
 		join {input.fx2tab} {input.tsv} | \
-			awk -F ' ' '{ print $2,"\t",$3,"\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9 }' | \
+			awk -F ' ' '{{ print $2,"\t",$3,"\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9 }}' | \
 			sed '1isequence\tKingdom\tPhylum\tClass\tOrder\tFamily\tGenus\tSpecies' > \
 			{output}
 		"""
@@ -236,8 +233,8 @@ rule aacheck_extract_unclassified_lineages_pullseq:
 		list = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
-	resources:
-		cpus=1,
-		mem_mb=1000
 	shell:
-		"pullseq -i {input.seqtable} -n {output.list} -l 5000 > {output.fasta}"
+		"""
+		module load {PULLSEQ}
+		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		"""
