@@ -25,17 +25,19 @@ rule nt_search:
 	and will output an alignment.
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB")
+		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB"),
 		targetDB = NTTARGET
-	output:
+	params:
 		alnDB = os.path.join("results", "mmseqs_nt_out", "resultDB")
+	output:
+		idx = os.path.join("results", "mmseqs_nt_out", "resultDB.index"),
 		tmp = directory(os.path.join("results", "mmseqs_nt_out", "tmp_nt"))
 	threads: 16
 	shell:
 		"""
 		module load {MMSEQS}
 		mmseqs search {input.queryDB} {input.targetDB} \
-			{output.alnDB} {output.tmp} \
+			{params.alnDB} {output.tmp} \
 			-a \
 			-e 0.000001 \
 			--search-type 3 \
@@ -46,13 +48,15 @@ rule nt_search:
 
 rule nt_extract_top_hit_from_search:
 	input:
+		idx = os.path.join("results", "mmseqs_nt_out", "resultDB.index")
+	params:
 		resultDB = os.path.join("results", "mmseqs_nt_out", "resultDB")
 	output:
 		bestResultDB = os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit")
 	shell:
 		"""
 		module load {MMSEQS}
-		mmseqs filterdb {input.resultDB} {output.bestResultDB} \
+		mmseqs filterdb {params.resultDB} {output.bestResultDB} \
 			--extract-lines 1 \
 			--threads {threads}
 		"""
@@ -62,8 +66,8 @@ rule nt_convert_top_hit_from_search:
 	Convert best hit from search (resultDB) to human readable
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB")
-		targetDB = NTTARGET
+		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB"),
+		targetDB = NTTARGET,
 		alnDB = os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit")
 	output:
 		os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit.m8")
