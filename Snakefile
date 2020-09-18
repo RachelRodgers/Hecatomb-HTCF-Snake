@@ -27,6 +27,7 @@ READDIR = config["Paths"]["Reads"]
 
 # File paths
 PHAGE = config["DatabaseFiles"]["Phage"]
+NCBIACC = config["DatabaseFiles"]["NCBIAccession"] # write to file so R can read in
 
 # Java memory
 XMX = config["System"]["Memory"]
@@ -58,22 +59,24 @@ include: "contaminant_removal.snakefile"
 include: "cluster_count.snakefile"
 #----- Merge Sequencing Tables -----#
 include: "seqtable_merge.snakefile"
-#----- MMseqs2 Query Viral Seqs Against AA DB -----#
+#----- MMSeqs2 Query Viral Seqs Against AA DB -----#
 include: "mmseqs_pviral_aa.snakefile"
-#----- MMseqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
+#----- MMSeqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
 include: "mmseqs_pviral_aa_check.snakefile"
+#----- MMSeqs2 Query AA Unclassified Seqs Against Refseq Virus NT UniVec Masked -----#
+include: "mmseqs_pviral_nt.snakefile"
 
 
 rule all:
 	input:
 		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"),
-		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta"),
 		os.path.join("results", "mmseqs_aa_out", "aln.m8"),
 		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8"),
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8"),
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
 		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
-		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
+		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta"),
+		os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit.m8")
 
 rule clean:
 	shell:
