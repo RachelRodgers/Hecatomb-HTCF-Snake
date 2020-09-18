@@ -27,7 +27,12 @@ READDIR = config["Paths"]["Reads"]
 
 # File paths
 PHAGE = config["DatabaseFiles"]["Phage"]
-NCBIACC = config["DatabaseFiles"]["NCBIAccession"] # write to file so R can read in
+NCBIACC = config["DatabaseFiles"]["NCBIAccession"] 
+
+# Write NCBI Accession path (for taxonomizr) to file so R can read in:
+ncbiAccPath = open("./taxonomizr_ncbi_accession_path.txt", w)
+ncbiAccPath.write(NCBIACC)
+ncbiAccPath.close()
 
 # Java memory
 XMX = config["System"]["Memory"]
@@ -65,6 +70,8 @@ include: "mmseqs_pviral_aa.snakefile"
 include: "mmseqs_pviral_aa_check.snakefile"
 #----- MMSeqs2 Query AA Unclassified Seqs Against Refseq Virus NT UniVec Masked -----#
 include: "mmseqs_pviral_nt.snakefile"
+#----- Annotate AA Unclassified Seqs NT Search (Alignment) Results -----#
+include: "mmseqs_pviral_nt_annotate.snakefile"
 
 
 rule all:
