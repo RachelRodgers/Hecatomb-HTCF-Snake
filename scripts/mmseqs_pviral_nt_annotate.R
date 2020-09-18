@@ -59,7 +59,7 @@ write_tsv(mmseqs_pviral_nt_lineage,
 print("mmseqs_pviral_nt_annotate: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
-savePath <- paste(workingDirectory, "./R_session_info/", sep = "")
+savePath <- paste(workingDirectory, "/R_session_info/", sep = "")
 dir.create(path = savePath, showWarnings = FALSE)
 saveFile <- file(paste(savePath, 
                        "mmseqs_pviral_nt_annotate_session_info.txt", sep = ""))

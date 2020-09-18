@@ -12,7 +12,7 @@ rule remove_exact_duplicates:
 		os.path.join("QC", "step_8", "clustered", PATTERN_R1 + ".s8.deduped.out.fastq")
 	threads: 8
 	resources: 
-		mem_mb = 50000
+		mem_mb=50000
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -35,8 +35,8 @@ rule dereplicate:
 		fa = os.path.join("QC", "step_8", "clustered", "{sample}_best.fasta"),
 		stats = os.path.join("QC", "step_8", "clustered", "{sample}_stats.txt")
 	threads: 8
-	resources:
-		mem_mb = 50000
+	#resources:
+		#mem_mb = 50000
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -60,8 +60,8 @@ rule reformat:
 		os.path.join("QC", "step_8", "clustered", "{sample}_best.fasta")
 	output:
 		out = os.path.join("QC", "step_8", "clustered", "{sample}_reformatted.fasta")
-	resources:
-		mem_mb = 50000
+	#resources:
+		#mem_mb=50000
 	shell:
 		"""
 		module load {BBTOOLS}

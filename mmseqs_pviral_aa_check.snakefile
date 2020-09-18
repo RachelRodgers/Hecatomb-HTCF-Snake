@@ -200,7 +200,10 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
 	shell:
-		"seqkit fx2tab {input} > {output}"
+		"""
+		module load {SEQKIT}
+		seqkit fx2tab {input} > {output}
+		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 	input:

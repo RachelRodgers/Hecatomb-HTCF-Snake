@@ -21,14 +21,14 @@ for (package in requiredPackages) {
 
 #----- Collect seqtables -----#
 
-print("seqtable_merge: Reading sequencing tables.\n")
+cat("\nseqtable_merge: Reading sequencing tables.\n")
 
 files <- list.files(path = "./QC/step_8/clustered/", 
                     pattern = "*_seqtable.txt", full.names = TRUE)
 
 #----- Reduce seqtables to a single table -----#
 
-print("seqtable merge: Reducing sample sequencing tables into single table.\n")
+cat("\nseqtable merge: Reducing sample sequencing tables into single table.\n")
 
 seqtable.all <- files %>%
   map(read_tsv) %>%
@@ -39,7 +39,7 @@ seqtable.all <- files %>%
 
 #----- Write count table -----#
 
-print("seqtable merge: Writing count table.\n")
+cat("\nseqtable merge: Writing count table.\n")
 
 dir.create(path = "./results", showWarnings = FALSE)
 
@@ -47,7 +47,7 @@ write_tsv(seqtable.all, path = "./results/seqtable.all", col_names=TRUE)
 
 #----- Write tabular fasta (tab2fx) -----#
 
-print("seqtable merge: Writing tabular fasta.\n")
+cat("\nseqtable merge: Writing tabular fasta.\n")
 
 seqs <- tibble(`sequence` = seqtable.all$sequence)
 
@@ -60,10 +60,10 @@ write_tsv(seqs.df, "./results/seqtable.tab2fx", col_names = FALSE)
 
 #----- Save session information -----#
 
-print("seqtable merge: Saving session info (retain for debugging).\n")
+cat("\nseqtable merge: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
-savePath <- paste(workingDirectory, "./R_session_info/", sep = "")
+savePath <- paste(workingDirectory, "/R_session_info/", sep = "")
 dir.create(path = savePath, showWarnings = FALSE)
 saveFile <- file(paste(savePath, "seqtable_merge_R_session_info.txt", sep = ""))
 writeLines(capture.output(sessionInfo()), saveFile)

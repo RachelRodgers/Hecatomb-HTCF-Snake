@@ -30,7 +30,7 @@ PHAGE = config["DatabaseFiles"]["Phage"]
 NCBIACC = config["DatabaseFiles"]["NCBIAccession"] 
 
 # Write NCBI Accession path (for taxonomizr) to file so R can read in:
-ncbiAccPath = open("./taxonomizr_ncbi_accession_path.txt", w)
+ncbiAccPath = open("./taxonomizr_ncbi_accession_path.txt", "w")
 ncbiAccPath.write(NCBIACC)
 ncbiAccPath.close()
 
@@ -83,7 +83,7 @@ rule all:
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
 		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta"),
-		os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit.m8")
+		os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv")
 
 rule clean:
 	shell:
