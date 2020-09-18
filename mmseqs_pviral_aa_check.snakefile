@@ -23,21 +23,21 @@ rule aacheck_create_querydb_from_viruses_seqs:
 		mmseqs createdb {input} {output} --dont-shuffle 0 --dbtype 0
 		"""
 
-rule aacheck_taxonomy_search:
+rule aacheck_taxonomy_search_alignment:
 	"""
 	Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
 	viral sequences) against the UniClust 30 protein DB to generate taxonomic
-    assignments to the sequences using LCA.  This is a translated search and will output 
-    an alignment.
+	assignments to the sequences using LCA.  This is a translated search and will output 
+	an alignment.
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK
-    params:
-        taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
+	params:
+		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
 	output:
 		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "tmp_aa_checked")),
-        idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
 	shell:
 		"""
@@ -58,9 +58,9 @@ rule aacheck_convert_taxonomy_result_to_m8:
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK,
-        idx = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.index")
-    params:
-        alnDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult")
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
+	params:
+		alnDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8")
 	shell:
@@ -71,21 +71,22 @@ rule aacheck_convert_taxonomy_result_to_m8:
 			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln" \
 			--threads 16
 		"""
+
 rule aacheck_taxonomy_search_lca:
-    """
-    Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
+	"""
+	Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
 	viral sequences) against the UniClust 30 protein DB to generate taxonomic
-    assignments to the sequences using LCA.  This is a translated search will output 
-    LCA (taxonomy).
-    """
-input:
+	assignments to the sequences using LCA.  This is a translated search will output 
+	LCA (taxonomy).
+	"""
+	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK
-    params:
-        taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
+	params:
+		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
 	output:
 		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tmp_aa_checked")),
-        idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
 	threads: 16
 	shell:
 		"""
@@ -93,16 +94,16 @@ input:
 		mmseqs taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
-            -s 7 \
-            --search-type 2 \
-            --tax-lineage true \
-            --lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
-            --threads {threads}
+			-s 7 \
+			--search-type 2 \
+			--tax-lineage true \
+			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
+			--threads {threads}
 		"""
 
 rule aacheck_extract_best_hit_from_taxonomy_result:
-    input:
-        os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+	input:
+		os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
 	params:
 		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
 	output:
@@ -114,23 +115,23 @@ rule aacheck_extract_best_hit_from_taxonomy_result:
 		"""
 
 rule aacheck_convert_best_hit:
+	"""
+	Convert best hit from taxonomyResult (taxonomyResult.firsthit) to human readable
+	"""
+	input:
+		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		targetDB = AATARGETCHECK,
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+	params:
+		alignmentDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
+	threads: 16
+	shell:
 		"""
-		Convert best hit from taxonomyResult (taxonomyResult.firsthit) to human readable
+		module load {MMSEQS}
+		mmseqs convertalis {input.queryDB} {input.targetDB} {params.alignmentDB} {output} --threads {threads}
 		"""
-		input:
-			queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
-			targetDB = AATARGETCHECK
-            idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
-        params:
-			alignmentDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
-		output:
-			os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
-		threads: 16
-		shell:
-			"""
-			module load {MMSEQS}
-			mmseqs convertalis {input.queryDB} {input.targetDB} {params.alignmentDB} {output} --threads {threads}
-			"""
 
 rule aacheck_create_taxonomy_table_from_lca:
 	"""
@@ -138,8 +139,8 @@ rule aacheck_create_taxonomy_table_from_lca:
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
-        idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
-    params:
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+	params:
 		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
@@ -159,86 +160,84 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 	input:
 		viruses = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
 		phagetax = PHAGE
-    resources:
-        cpus=1,
-        mem_mb=1000
+	resources:
+		cpus=1,
+		mem_mb=1000
 	output:
 		tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv"),
 	shell:
-        """
-        grep -v 'Bacteria:' {input.viruses} | \
-            grep 'Viruses:' | \
+		"""
+		grep -v 'Bacteria:' {input.viruses} | \ 
+			grep 'Viruses:' | \
 			grep -v -f {input.phagetax} | cut -f1,5 | \
 			sed 's/:/\t/g' | \
 			sort -n -k1 > {output.tsv}
-        """
+		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_cut:
-    input:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
-    output:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
-    resources:
-        cpus=1,
-        mem_mb=1000
-    shell:
-        "cut -f1 {input} > {output}"
+	input:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
+	resources:
+		cpus=1,
+		mem_mb=1000
+	shell:
+		"cut -f1 {input} > {output}"
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_pullseq:
-    input:
-        seqtable = os.path.join("results", "seqtable.fasta"),
-        list = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
-    output:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
-    shell:
-        """
-        module load {PULLSEQ}
-        pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
-        """
+	input:
+		seqtable = os.path.join("results", "seqtable.fasta"),
+		list = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
+	shell:
+		"""
+		module load {PULLSEQ}
+		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
-    input:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
-    output:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
-    shell:
-        """
-        seqkit fx2tab {output.fa} > {output.fx2tab}
-        """
+	input:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
+	shell:
+		"seqkit fx2tab {output.fa} > {output.fx2tab}"
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_join:
-    input:
-        fx2tab = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab"),
-        tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
-    output:
-        os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
-    shell:
-        """
-        join {input.fx2tab} {input.tsv} | \
+	input:
+		fx2tab = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab"),
+		tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
+	shell:
+		"""
+		join {input.fx2tab} {input.tsv} | \
 			awk -F ' ' '{ print $2,"\t",$3,"\t",$4,"\t",$5,"\t",$6,"\t",$7,"\t",$8,"\t",$9 }' | \
 			sed '1isequence\tKingdom\tPhylum\tClass\tOrder\tFamily\tGenus\tSpecies' > \
 			{output}
-        """
+		"""
 
 rule aacheck_extract_unclassified_lineages_grep:
 	input:
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
-    resources:
-        cpus=1,
-        mem_mb=1000
+	resources:
+		cpus=1,
+		mem_mb=1000
 	shell:
 		"grep -v 'Viruses:' {input} | cut -f1,5 | sed 's/:/\t/g' | sort -n -k1 > {output}"
 
 rule aacheck_extract_unclassified_lineages_pullseq:
-    input:
-        seqtable = os.path.join("results", "seqtable.fasta"),
-        list = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
-    output:
-        os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
-    resources:
-        cpus=1,
-        mem_mb=1000
-    shell:
-        "pullseq -i {input.seqtable} -n {output.list} -l 5000 > {output.fasta}"
+	input:
+		seqtable = os.path.join("results", "seqtable.fasta"),
+		list = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
+	resources:
+		cpus=1,
+		mem_mb=1000
+	shell:
+		"pullseq -i {input.seqtable} -n {output.list} -l 5000 > {output.fasta}"

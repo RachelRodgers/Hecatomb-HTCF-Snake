@@ -141,8 +141,8 @@ rule aa_extract_all_potential_viruses:
 	output:
 		os.path.join("results", "mmseqs_aa_out", "all_viruses_table.tsv")
 	resources:
-        cpus=1,
-        mem_mb=1000
+		cpus=1,
+		mem_mb=1000
 	shell:
 		"""
 		grep 'Viruses:' {input} | cut -f1,5 | sed 's/phi14:2/phi14_2/g' | sed 's/:/\t/g' | sort -n -k1 > {output}
@@ -159,8 +159,8 @@ rule aa_extract_phage_lineages_for_R_grep:
 	output:
 		os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
 	resources:
-        cpus=1,
-        mem_mb=1000
+		cpus=1,
+		mem_mb=1000
 	shell:
 		"grep -f {input.phagetax} {input.viruses} > {output}"
 
@@ -205,8 +205,8 @@ rule aa_extract_phage_lineages_for_R_join:
 	output:
 		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv")
 	resources:
-        cpus=1,
-        mem_mb=1000
+		cpus=1,
+		mem_mb=1000
 	shell:
 		"""
 		join {input.seqs} {input.table} | \
