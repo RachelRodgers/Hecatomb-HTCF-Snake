@@ -72,40 +72,11 @@ rule aacheck_convert_taxonomy_result_to_m8:
 			--threads 16
 		"""
 
-rule aacheck_taxonomy_search_lca:
-	"""
-	Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
-	viral sequences) against the UniClust 30 protein DB to generate taxonomic
-	assignments to the sequences using LCA.  This is a translated search will output 
-	LCA (taxonomy).
-	"""
-	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
-		targetDB = AATARGETCHECK
-	params:
-		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
-	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tmp_aa_checked")),
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
-	threads: 16
-	shell:
-		"""
-		module load {MMSEQS}
-		mmseqs taxonomy \
-			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
-			-a \
-			-s 7 \
-			--search-type 2 \
-			--tax-lineage true \
-			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
-			--threads {threads}
-		"""
-
 rule aacheck_extract_best_hit_from_taxonomy_result:
 	input:
-		os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+		os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB"),
+		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult"),
 		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
 	output:
 		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
@@ -134,15 +105,44 @@ rule aacheck_convert_best_hit:
 		mmseqs convertalis {input.queryDB} {input.targetDB} {params.alignmentDB} {output} --threads {threads}
 		"""
 
+rule aacheck_taxonomy_search_lca:
+	"""
+	Query the sequences in viral_seqs_queryDB (generated from all probable non-phage
+	viral sequences) against the UniClust 30 protein DB to generate taxonomic
+	assignments to the sequences using LCA.  This is a translated search will output 
+	LCA (taxonomy).
+	"""
+	input:
+		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		targetDB = AATARGETCHECK
+	params:
+		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
+	output:
+		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "tmp_aa_checked")),
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
+	threads: 16
+	shell:
+		"""
+		module load {MMSEQS}
+		mmseqs taxonomy \
+			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
+			-a \
+			-s 7 \
+			--search-type 2 \
+			--tax-lineage true \
+			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
+			--threads {threads}
+		"""
+
 rule aacheck_create_taxonomy_table_from_lca:
 	"""
 	Create a TSV formatted taxonomy table from the LCA output
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB.index")
+		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "lcaDB")
+		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
 	output:
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
 	threads: 8
