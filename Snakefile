@@ -29,6 +29,11 @@ READDIR = config["Paths"]["Reads"]
 PHAGE = config["DatabaseFiles"]["Phage"]
 NCBIACC = config["DatabaseFiles"]["NCBIAccession"] 
 
+# Write out NCBI Accession path to be read in by R scripts
+ncbiAccPath = open("./taxonomizr_ncbi_accession_path.txt", "w")
+ncbiAccPath.write(NCBIACC)
+ncbiAccPath.close()
+
 # Java memory
 XMX = config["System"]["Memory"]
 
@@ -67,7 +72,6 @@ include: "mmseqs_pviral_aa_check.snakefile"
 include: "mmseqs_pviral_nt.snakefile"
 #----- Annotate AA Unclassified Seqs NT Search (Alignment) Results -----#
 include: "mmseqs_pviral_nt_annotate.snakefile"
-
 
 rule all:
 	input:
