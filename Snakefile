@@ -29,11 +29,6 @@ READDIR = config["Paths"]["Reads"]
 PHAGE = config["DatabaseFiles"]["Phage"]
 NCBIACC = config["DatabaseFiles"]["NCBIAccession"] 
 
-# Write NCBI Accession path (for taxonomizr) to file so R can read in:
-ncbiAccPath = open("./taxonomizr_ncbi_accession_path.txt", "w")
-ncbiAccPath.write(NCBIACC)
-ncbiAccPath.close()
-
 # Java memory
 XMX = config["System"]["Memory"]
 
