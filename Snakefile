@@ -90,7 +90,7 @@ rule all:
 		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta"),
 		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta"),
-		os.path.join("results", "viruses_tax_table.tsv")
+		os.path.join("results", "viruses_tax_table.tsv"),
 		os.path.join("results", "phage_tax_table.tsv"),
 		os.path.join("results", "aa.aln.m8"),
 		os.path.join("results", "nt.aln.m8")

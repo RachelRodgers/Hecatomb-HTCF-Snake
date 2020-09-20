@@ -13,7 +13,7 @@ rule fix_eukaryotic_virus_AA_annotation:
 		cpus=1,
 		mem_mb=1000
 	shell:
-		"sed 's/uc_//g' {input} {output}"
+		"sed 's/uc_//g' {input} > {output}"
 
 rule fix_eukaryotic_virus_NT_annotation:
 	input:
@@ -38,7 +38,7 @@ rule join_aa_and_nt_files:
 	shell:
 		"cat {input.aa} {input.nt} | sort -n -k 1 > {output}"
 
-rule fix_viruses_tax_table_in_place:
+rule fix_viruses_tax_table:
 	input:
 		os.path.join("results", "viruses_tax_table_tmp.tsv")
 	output:
@@ -49,7 +49,7 @@ rule fix_viruses_tax_table_in_place:
 	shell:
 		"sed '1iid\tKingdom\tPhylum\tClass\tOrder\tFamily\tGenus\tSpecies' {input} > {output}"
 
-rule fix_phage_results_sed:
+rule fix_phage_results_1:
 	input:
 		os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
 	output:
@@ -60,7 +60,7 @@ rule fix_phage_results_sed:
 	shell:
 		"sed 's/uc_//g' {input} > {output}"
 
-rule fix_phage_results_in_place:
+rule fix_phage_results_2:
 	input:
 		os.path.join("results", "phage_tax_table_tmp.tsv")
 	output:
@@ -75,18 +75,14 @@ rule adjust_aa_aln:
 	input:
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out" "taxonomyResult.firsthit_edited.m8")
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit_edited.m8")
 	resources:
 		cpus=1,
 		mem_mb=1000
 	shell:
-		"""
-		sed |
-			'1iquery\ttarget\tpercent_id\talignment_length\tnum_mismatches\tnumber_gaps\tstart_query\tend_query\tstart_target\tend_target\te_value\tbit_score' |
-			{input} > {output}
-		"""
+		"sed '1iquery\ttarget\tpercent_id\talignment_length\tnum_mismatches\tnumber_gaps\tstart_query\tend_query\tstart_target\tend_target\te_value\tbit_score' {input} > {output}"
 
-rule adjust_nt_aln_in_place:
+rule adjust_nt_aln:
 	input:
 		os.path.join("results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
 	output:
@@ -95,11 +91,7 @@ rule adjust_nt_aln_in_place:
 		cpus=1,
 		mem_mb=1000
 	shell:
-		"""
-		sed |
-			'1iquery\ttarget\tpercent_id\talignment_length\tnum_mismatches\tnumber_gaps\tstart_query\tend_query\tstart_target\tend_target\te_value\tbit_score' |
-			{input} > {output}
-		"""
+		"sed '1iquery\ttarget\tpercent_id\talignment_length\tnum_mismatches\tnumber_gaps\tstart_query\tend_query\tstart_target\tend_target\te_value\tbit_score' {input} > {output}"
 
 rule copy_aa_aln_to_results:
 	input:
