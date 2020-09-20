@@ -78,18 +78,22 @@ include: "mmseqs_pviral_nt_annotate.snakefile"
 include: "mmseqs_pviral_nt_check.snakefile"
 #----- Annotate Probable Viral Non-Phage Sequences Search (Alignment) Results -----#
 include: "mmseqs_pviral_nt_check_annotate.snakefile"
+#----- Concatenate Results -----#
+include: "concatenate_results.snakefile"
 
 rule all:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"), # goes to concatenate_results
+		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"),
 		os.path.join("results", "mmseqs_aa_out", "aln.m8"),
 		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8"),
-		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8"), # goes to concatenate_results
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"), # goes to concatenate_results
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta"),
-		os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_checked_lineage.tsv"), # goes to concatenate_results
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta")
+		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta"),
+		os.path.join("results", "viruses_tax_table.tsv")
+		os.path.join("results", "phage_tax_table.tsv"),
+		os.path.join("results", "aa.aln.m8"),
+		os.path.join("results", "nt.aln.m8")
 
 rule clean:
 	shell:
