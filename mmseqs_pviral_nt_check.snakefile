@@ -22,7 +22,7 @@ rule ntcheck_extract_phage_lineages_from_pviralNT_tail:
 
 rule ntcheck_extract_phage_lineages_from_pviralNT_cut:
 	input:
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table")
+		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.tsv")
 	output:
 		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.list")
 	resources:
@@ -106,7 +106,7 @@ rule ntcheck_mmseqs_search:
 	params:
 		alnDB = os.path.join("results", "mmseqs_nt_checked_out", "resultDB")
 	output:
-		idx = os.path.join("results", "mmseqs_nt_out", "resultDB.index"),
+		idx = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.index"),
 		tmp = directory(os.path.join("results", "mmseqs_nt_checked_out", "tmp_nt_check"))
 	threads: 16
 	shell:
