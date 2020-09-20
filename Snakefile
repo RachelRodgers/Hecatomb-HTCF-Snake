@@ -21,6 +21,7 @@ BACPATH = config["Paths"]["Bacteria"]
 AATARGET = config["Paths"]["TargetMMseqsAA"]
 AATARGETCHECK = config["Paths"]["TargetMMseqsAACheck"]
 NTTARGET = config["Paths"]["TargetMMseqsNT"]
+NTTARGETCHECK = config["Paths"]["TargetMMseqsNTCheck"]
 
 # Data paths
 READDIR = config["Paths"]["Reads"]
@@ -64,25 +65,31 @@ include: "contaminant_removal.snakefile"
 include: "cluster_count.snakefile"
 #----- Merge Sequencing Tables -----#
 include: "seqtable_merge.snakefile"
-#----- MMSeqs2 Query Viral Seqs Against AA DB -----#
+#----- MMSeqs2 Query Sequencing Table Against UniProt Viral Proteins Clustered at 99% (Virus Uniprot)-----#
+# Extract phage (phage_tax_table.tsv), non-phage (viruses_seqs.fasta), and unclassified (pviral_aa_unclassified_seqs.fasta)
 include: "mmseqs_pviral_aa.snakefile"
-#----- MMSeqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
+#----- MMSeqs2 Query Probable Viral Non-Phage Sequences (viruses_seqs.fasta) Against UniClust30 ProteinDB (Remove False Positives; Uni Plus Virus)-----#
 include: "mmseqs_pviral_aa_check.snakefile"
-#----- MMSeqs2 Query AA Unclassified Seqs Against Refseq Virus NT UniVec Masked -----#
+#----- MMSeqs2 Query Probable Viral Unclassified Sequences (pviral_aa_unclassified_seqs.fasta) Against Refseq Virus NT UniVec Masked -----#
 include: "mmseqs_pviral_nt.snakefile"
-#----- Annotate AA Unclassified Seqs NT Search (Alignment) Results -----#
+#----- Annotate Probable Viral Unclassified Sequences Search (Alignment) Results -----#
 include: "mmseqs_pviral_nt_annotate.snakefile"
+#----- MMSeqs2 Query Probable Non-Phage Viral Sequences Against UniClust30 + Virus UniProt ProteinDB (Remove False Positives) -----#
+include: "mmseqs_pviral_nt_check.snakefile"
+#----- Annotate Probable Viral Non-Phage Sequences Search (Alignment) Results -----#
+include: "mmseqs_pviral_nt_check_annotate.snakefile"
 
 rule all:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"),
+		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv"), # goes to concatenate_results
 		os.path.join("results", "mmseqs_aa_out", "aln.m8"),
 		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8"),
-		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8"),
+		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8"), # goes to concatenate_results
 		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"),
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv"), # goes to concatenate_results
 		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta"),
-		os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv")
+		os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_checked_lineage.tsv"), # goes to concatenate_results
+		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta")
 
 rule clean:
 	shell:

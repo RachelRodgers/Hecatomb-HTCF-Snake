@@ -1,4 +1,5 @@
-#----- MMseqs2 Query Viral Seqs Against AA DB -----#
+#----- MMSeqs2 Query Sequencing Table Against UniProt Viral Proteins Clustered at 99% (Virus Uniprot)-----#
+# Extract phage (phage_tax_table.tsv), non-phage (viruses_seqs.fasta), and unclassified (pviral_aa_unclassified_seqs.fasta)
 
 """
 Query sample sequences against Virus Uniprot DB.

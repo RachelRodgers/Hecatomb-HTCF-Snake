@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-# mmseqs_pviral_nt_annotate.R
+# mmseqs_pviral_nt_check_annotate.R
 
 #----- Load or install required packages -----#
 
@@ -25,10 +25,10 @@ for (package in requiredPackages) {
 ncbiAccPath <- readLines(con = "./taxonomizr_ncbi_accession_path.txt", n = 1,
                          warn = FALSE)
 
-#----- Annotate mmseqs_nt_out/resultDB.firsthit.m8 Sequences -----#
+#----- Annotate mmseqs_nt_checked_out/resultDB.firsthit.m8 Sequences -----#
 
 # Read *.m8 file with best hit NCBI accession number
-m8 <- read_tsv("./results/mmseqs_nt_out/resultDB.firsthit.m8", 
+m8 <- read_tsv("./results/mmseqs_nt_checked_out/resultDB.firsthit.m8", 
                col_names = FALSE)
 
 colnames(m8) <- c("query","target","pident","alnlen","mismatch","gapopen",
@@ -48,20 +48,18 @@ seqids <- select(m8, "query")
 mmseqs_pviral_nt_lineage <- cbind(seqids, ncbi_tax)
 
 # Write results to table
-dir.create(path = "./results/mmseqs_nt_checked_out/", 
-           showWarnings=FALSE)
-
 write_tsv(mmseqs_pviral_nt_lineage, 
-          path = "./results/mmseqs_nt_checked_out/mmseqs_pviral_nt_lineage.tsv")
+          path = "./results/mmseqs_nt_checked_out/mmseqs_pviral_nt_checked_lineage.tsv")
 
 #----- Save session information -----#
 
-print("mmseqs_pviral_nt_annotate: Saving session info (retain for debugging).\n")
+print("mmseqs_pviral_nt_check_annotate: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
 savePath <- paste(workingDirectory, "/R_session_info/", sep = "")
 dir.create(path = savePath, showWarnings = FALSE)
 saveFile <- file(paste(savePath, 
-                       "mmseqs_pviral_nt_annotate_session_info.txt", sep = ""))
+                       "mmseqs_pviral_nt_check_annotate_session_info.txt", 
+                       sep = ""))
 writeLines(capture.output(sessionInfo()), saveFile)
 close(saveFile)

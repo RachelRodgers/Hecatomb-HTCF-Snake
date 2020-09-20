@@ -1,8 +1,8 @@
-#----- MMSeqs2 Query AA Unclassified Seqs Against Refseq Virus NT UniVec Masked -----#
+#----- MMSeqs2 Query Probable Viral Unclassified Sequences (pviral_aa_unclassified_seqs.fasta) Against Refseq Virus NT UniVec Masked -----#
 
 """
 Query pviral_aa_unclassified_seqs.fasta against
-refseq_viru_nt_UniVec_masked/nt.fnaDB.
+refseq_virus_nt_UniVec_masked/nt.fnaDB.
 (All refseq viral gene sequences + nearest neighbors
 with exact duplicates removed.)
 """
@@ -63,7 +63,7 @@ rule nt_extract_top_hit_from_search:
 
 rule nt_convert_top_hit_from_search:
 	"""
-	Convert best hit from search (resultDB) to human readable
+	Convert best hit from search (resultDB.firsthit) to human readable
 	"""
 	input:
 		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB"),

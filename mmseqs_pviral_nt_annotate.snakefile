@@ -1,4 +1,4 @@
-#----- Annotate AA Unclassified Seqs NT Search (Alignment) Results -----#
+#----- Annotate Probable Viral Unclassified Sequences Search (Alignment) Results -----#
 
 rule nt_annotate:
 	input:

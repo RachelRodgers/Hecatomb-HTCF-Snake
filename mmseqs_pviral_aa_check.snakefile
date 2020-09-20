@@ -1,4 +1,4 @@
-#----- MMseqs2 Query Probable Viral Seqs Against UniClust 30 proteinDB -----#
+#----- MMSeqs2 Query Probable Viral Non-Phage Sequences (viruses_seqs.fasta) Against UniClust30 ProteinDB (Remove False Positives; Uni Plus Virus)-----#
 
 """
 Query probable viral sequences (viruses_seqs.fasta) against UniClust30 DB.
@@ -161,11 +161,11 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 	input:
 		viruses = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
 		phagetax = PHAGE
+	output:
+		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
-	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv"),
 	shell:
 		"""
 		grep -v 'Bacteria:' {input.viruses} | grep 'Viruses:' | grep -v -f {input.phagetax} | cut -f1,5 | sed 's/:/\t/g' | sort -n -k1 > {output}
