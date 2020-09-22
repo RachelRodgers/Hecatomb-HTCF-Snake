@@ -1,0 +1,3 @@
+[submodule "scripts/snakemake_helpers"]
+	path = scripts/snakemake_helpers
+	url = https://github.com/RachelRodgers/snakemake_helpers.git

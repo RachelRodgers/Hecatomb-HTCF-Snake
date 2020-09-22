@@ -7,6 +7,7 @@ Rachel Rodgers, Sep 2020
 import os
 import sys
 sys.path.append("./scripts")
+sys.path.append("./scripts/snakemake_helpers")
 
 from hecatomb_helpers import *
 
