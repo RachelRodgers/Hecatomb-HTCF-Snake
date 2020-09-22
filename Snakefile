@@ -9,7 +9,7 @@ import sys
 sys.path.append("./scripts")
 sys.path.append("./scripts/snakemake_helpers")
 
-from hecatomb_helpers import *
+from snakemake_helpers import *
 
 #----- Snakemake Set Up -----#
 
