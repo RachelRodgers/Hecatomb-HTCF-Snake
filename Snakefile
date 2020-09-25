@@ -13,7 +13,7 @@ from snakemake_helpers import *
 
 #----- Snakemake Set Up -----#
 
-configfile: "config.yaml"
+configfile: "hecatomb_config.yaml"
 
 # Hecatomb DB paths
 CONPATH = config["Paths"]["Contaminants"]
