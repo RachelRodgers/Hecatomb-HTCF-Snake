@@ -6,7 +6,7 @@ Rachel Rodgers, Sep 2020
 
 import os
 import sys
-sys.path.append("./scripts")
+
 sys.path.append("./scripts/snakemake_helpers")
 
 from snakemake_helpers import *
@@ -32,6 +32,9 @@ PHAGE = config["DatabaseFiles"]["Phage"]
 NCBIACC = config["DatabaseFiles"]["NCBIAccession"] 
 
 # Write out NCBI Accession path to be read in by R scripts
+if not os.path.exists("results") :
+	os.makedirs("results")
+
 ncbiAccPath = open("./results/taxonomizr_ncbi_accession_path.txt", "w")
 ncbiAccPath.write(NCBIACC)
 ncbiAccPath.close()
