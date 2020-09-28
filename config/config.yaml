@@ -1,0 +1,4 @@
+jobs: 20
+cluster: "sbatch --mem={resources.mem_mb} -c {resources.cpus} -C {resources.nodes} -J {rule}_{wildcards} --mail-type=FAIL --mail-user=rachel.rodgers@wustl.edu"
+default-resources: [cpus=16, mem_mb=64000, nodes="cpu_E52650"]
+resources: [cpus=32, mem_mb=64000]
