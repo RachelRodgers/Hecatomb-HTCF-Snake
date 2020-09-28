@@ -37,4 +37,4 @@ cp slurm_submit/*.py ~/.config/snakemake
 	# production run (run steps):
 	snakemake --profile slurm_hecatomb
 	```
-
+9. See slurm output files in the logs_slurm/ directory which will generate inside the hecatomb_htcf_snake/ directory.
