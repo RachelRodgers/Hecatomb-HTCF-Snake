@@ -23,7 +23,7 @@ for (package in requiredPackages) {
 
 cat("\nseqtable_merge: Reading sequencing tables.\n")
 
-files <- list.files(path = "./QC/step_8/clustered/", 
+files <- list.files(path = "results/QC/step_8/clustered/", 
                     pattern = "*_seqtable.txt", full.names = TRUE)
 
 #----- Reduce seqtables to a single table -----#
@@ -63,7 +63,7 @@ write_tsv(seqs.df, "./results/seqtable.tab2fx", col_names = FALSE)
 cat("\nseqtable merge: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
-savePath <- paste(workingDirectory, "/R_session_info/", sep = "")
+savePath <- paste(workingDirectory, "/results/R_session_info/", sep = "")
 dir.create(path = savePath, showWarnings = FALSE)
 saveFile <- file(paste(savePath, "seqtable_merge_R_session_info.txt", sep = ""))
 writeLines(capture.output(sessionInfo()), saveFile)

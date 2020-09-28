@@ -9,9 +9,9 @@ with exact duplicates removed.)
 
 rule nt_create_querydb:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
 	output:
-		os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB")
+		os.path.join("results", "results", "mmseqs_nt_out", "seqtable_queryDB")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -25,13 +25,13 @@ rule nt_search:
 	and will output an alignment.
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_nt_out", "seqtable_queryDB"),
 		targetDB = NTTARGET
 	params:
-		alnDB = os.path.join("results", "mmseqs_nt_out", "resultDB")
+		alnDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB")
 	output:
-		idx = os.path.join("results", "mmseqs_nt_out", "resultDB.index"),
-		tmp = directory(os.path.join("results", "mmseqs_nt_out", "tmp_nt"))
+		idx = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.index"),
+		tmp = directory(os.path.join("results", "results", "mmseqs_nt_out", "tmp_nt"))
 	threads: 16
 	shell:
 		"""
@@ -48,11 +48,11 @@ rule nt_search:
 
 rule nt_extract_top_hit_from_search:
 	input:
-		idx = os.path.join("results", "mmseqs_nt_out", "resultDB.index")
+		idx = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_nt_out", "resultDB")
+		resultDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB")
 	output:
-		bestResultDB = os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit")
+		bestResultDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -66,11 +66,11 @@ rule nt_convert_top_hit_from_search:
 	Convert best hit from search (resultDB.firsthit) to human readable
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_nt_out", "seqtable_queryDB"),
 		targetDB = NTTARGET,
-		alnDB = os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit")
+		alnDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit")
 	output:
-		os.path.join("results", "mmseqs_nt_out", "resultDB.firsthit.m8")
+		os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit.m8")
 	shell:
 		"""
 		module load {MMSEQS}

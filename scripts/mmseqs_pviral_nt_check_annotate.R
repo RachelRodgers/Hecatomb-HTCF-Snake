@@ -22,13 +22,13 @@ for (package in requiredPackages) {
 
 #----- Read in path to accessionTaxa.sql -----#
 
-ncbiAccPath <- readLines(con = "./taxonomizr_ncbi_accession_path.txt", n = 1,
+ncbiAccPath <- readLines(con = "./results/taxonomizr_ncbi_accession_path.txt", n = 1,
 												 warn = FALSE)
 
 #----- Annotate mmseqs_nt_checked_out/resultDB.firsthit.m8 Sequences -----#
 
 # Read *.m8 file with best hit NCBI accession number
-m8 <- read_tsv("./results/mmseqs_nt_checked_out/resultDB.firsthit.m8", 
+m8 <- read_tsv("./results/results/mmseqs_nt_checked_out/resultDB.firsthit.m8", 
 							 col_names = FALSE)
 
 colnames(m8) <- c("query","target","pident","alnlen","mismatch","gapopen",
@@ -49,14 +49,14 @@ mmseqs_pviral_nt_lineage <- cbind(seqids, ncbi_tax)
 
 # Write results to table
 write_tsv(mmseqs_pviral_nt_lineage, 
-					path = "./results/mmseqs_nt_checked_out/mmseqs_pviral_nt_checked_lineage.tsv")
+					path = "./results/results/mmseqs_nt_checked_out/mmseqs_pviral_nt_checked_lineage.tsv")
 
 #----- Save session information -----#
 
 print("mmseqs_pviral_nt_check_annotate: Saving session info (retain for debugging).\n")
 
 workingDirectory <- getwd()
-savePath <- paste(workingDirectory, "/R_session_info/", sep = "")
+savePath <- paste(workingDirectory, "/results/R_session_info/", sep = "")
 dir.create(path = savePath, showWarnings = FALSE)
 saveFile <- file(paste(savePath, 
 											 "mmseqs_pviral_nt_check_annotate_session_info.txt", 

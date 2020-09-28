@@ -8,10 +8,10 @@ bac_virus_msaked/nt.fnaDB (UniClust 30 + Virus UniProt).
 
 rule ntcheck_extract_phage_lineages_from_pviralNT_tail:
 	input:
-		viruses = os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv"),
+		viruses = os.path.join("results", "results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv"),
 		phage = PHAGE
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.tsv")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_table.tsv")
 	resources:
 		cpus = 1, 
 		mem_mb = 1000
@@ -22,9 +22,9 @@ rule ntcheck_extract_phage_lineages_from_pviralNT_tail:
 
 rule ntcheck_extract_phage_lineages_from_pviralNT_cut:
 	input:
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.tsv")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.list")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_table.list")
 	resources:
 		cpus = 1, 
 		mem_mb = 1000
@@ -33,10 +33,10 @@ rule ntcheck_extract_phage_lineages_from_pviralNT_cut:
 
 rule ntcheck_extract_phage_lineages_from_pviralNT_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_table.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_table.list")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}
@@ -45,10 +45,10 @@ rule ntcheck_extract_phage_lineages_from_pviralNT_pullseq:
 
 rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_tail:
 	input:
-		viruses = os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv"),
+		viruses = os.path.join("results", "results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv"),
 		phage = PHAGE
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.tsv")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.tsv")
 	resources:
 		cpus = 1, 
 		mem_mb = 1000
@@ -59,9 +59,9 @@ rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_tail:
 
 rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_cut:
 	input:
-		os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.tsv")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.list")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.list")
 	resources:
 		cpus = 1, 
 		mem_mb = 1000
@@ -70,10 +70,10 @@ rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_cut:
 
 rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_table.list")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}
@@ -85,9 +85,9 @@ rule ntcheck_create_queryDB_from_nonphage_viral_lineages:
 	Create a nucleotide query DB from the nonphage viral lineages
 	"""
 	input:
-		os.path.join("results", "mmseqs_nt_checked_out", "pviral_virus_nt_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_seqs.fasta")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "seqtable_queryDB")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "seqtable_queryDB")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -101,13 +101,13 @@ rule ntcheck_mmseqs_search:
 	and will output an alignment.
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_checked_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "seqtable_queryDB"),
 		targetDB = NTTARGETCHECK
 	params:
-		alnDB = os.path.join("results", "mmseqs_nt_checked_out", "resultDB")
+		alnDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB")
 	output:
-		idx = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.index"),
-		tmp = directory(os.path.join("results", "mmseqs_nt_checked_out", "tmp_nt_check"))
+		idx = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.index"),
+		tmp = directory(os.path.join("results", "results", "mmseqs_nt_checked_out", "tmp_nt_check"))
 	threads: 16
 	shell:
 		"""
@@ -124,11 +124,11 @@ rule ntcheck_mmseqs_search:
 
 rule ntcheck_extract_top_hit_from_search:
 	input:
-		idx = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.index")
+		idx = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_nt_checked_out", "resultDB")
+		resultDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB")
 	output:
-		bestResultDB = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.firsthit")
+		bestResultDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -142,11 +142,11 @@ rule ntcheck_convert_top_hit_from_search:
 	Convert best hit from search (resultDB.firsthit) to human readable
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_nt_checked_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "seqtable_queryDB"),
 		targetDB = NTTARGETCHECK,
-		alnDB = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.firsthit")
+		alnDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
 	shell:
 		"""
 		module load {MMSEQS}

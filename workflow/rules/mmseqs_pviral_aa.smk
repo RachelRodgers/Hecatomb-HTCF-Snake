@@ -13,9 +13,9 @@ rule aa_convert_seqtable_to_fasta:
 	Convert seqtable.tab2fx to fasta so a sequence db can be generated from it
 	"""
 	input:
-		os.path.join("results", "seqtable.tab2fx")
+		os.path.join("results", "results", "seqtable.tab2fx")
 	output:
-		os.path.join("results", "seqtable.fasta")
+		os.path.join("results", "results", "seqtable.fasta")
 	shell:
 		"""
 		module load {SEQKIT}
@@ -27,9 +27,9 @@ rule aa_create_querydb_from_seqtable:
 	Create a sequence db from the seqtable made from all samples
 	"""
 	input:
-		os.path.join("results", "seqtable.fasta")
+		os.path.join("results", "results", "seqtable.fasta")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB")
+		os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -43,13 +43,13 @@ rule aa_taxonomy_search_alignment:
 	This is a translated search and will output an alignment.
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET
 	params:
-		taxaDB = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
+		taxaDB = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
 	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "tmp_aa")),
-		idx = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
+		tmp = directory(os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "tmp_aa")),
+		idx = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
 	shell:
 		"""
@@ -70,13 +70,13 @@ rule aa_convert_taxonomy_alignment_results_to_m8:
 	Convert the alignment results DB (taxonomyResult) to a human-readable format
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET,
-		idx = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
+		idx = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
 	params:
-		alnDB = os.path.join("results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
+		alnDB = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "aln.m8")
+		os.path.join("results", "results", "mmseqs_aa_out", "aln.m8")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -92,13 +92,13 @@ rule aa_taxonomy_search_lca:
 	This is a translated search and will output LCA (taxonomy).
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB"),
 		targetDB = AATARGET
 	params:
-		taxaDB = os.path.join("results", "mmseqs_aa_out", "lcaDB")
+		taxaDB = os.path.join("results", "results", "mmseqs_aa_out", "lcaDB")
 	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_out", "tmp_aa")),
-		idx = os.path.join("results", "mmseqs_aa_out", "lcaDB.index")
+		tmp = directory(os.path.join("results", "results", "mmseqs_aa_out", "tmp_aa")),
+		idx = os.path.join("results", "results", "mmseqs_aa_out", "lcaDB.index")
 	threads: 16
 	shell:
 		"""
@@ -119,12 +119,12 @@ rule aa_convert_taxonomy_lca_results_to_tsv:
 	Create a TSV formatted taxonomy table from the taxonomy LCA output
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_out", "seqtable_queryDB"),
-		idx = os.path.join("results", "mmseqs_aa_out", "lcaDB.index")
+		queryDB = os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB"),
+		idx = os.path.join("results", "results", "mmseqs_aa_out", "lcaDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_out", "lcaDB")
+		resultDB = os.path.join("results", "results", "mmseqs_aa_out", "lcaDB")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "taxonomyResult.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "taxonomyResult.tsv")
 	threads: 8
 	shell:
 		"""
@@ -138,9 +138,9 @@ rule aa_extract_all_potential_viruses:
 	Extract all potential viral sequences from taxonomyResult.tsv
 	"""
 	input:
-		os.path.join("results", "mmseqs_aa_out", "taxonomyResult.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "taxonomyResult.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "all_viruses_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "all_viruses_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -155,10 +155,10 @@ rule aa_extract_phage_lineages_for_R_grep:
 	taxonomy table for import into R as a phyloseq object
 	"""
 	input:
-		viruses = os.path.join("results", "mmseqs_aa_out", "all_viruses_table.tsv"),
+		viruses = os.path.join("results", "results", "mmseqs_aa_out", "all_viruses_table.tsv"),
 		phagetax = PHAGE
 	output:
-		os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -167,9 +167,9 @@ rule aa_extract_phage_lineages_for_R_grep:
 
 rule aa_extract_phage_lineages_for_R_cut:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "phage_seqs.list")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.list")
 	resources:
             cpus=1,
             mem_mb=1000
@@ -178,10 +178,10 @@ rule aa_extract_phage_lineages_for_R_cut:
 
 rule aa_extract_phage_lineages_for_R_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_aa_out", "phage_seqs.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.list")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "phage_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ} 
@@ -190,9 +190,9 @@ rule aa_extract_phage_lineages_for_R_pullseq:
 
 rule aa_extract_phage_lineages_for_R_seqkit:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "phage_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fasta")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "phage_seqs.fx2tab")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fx2tab")
 	shell:
 		"""
 		module load {SEQKIT}
@@ -201,10 +201,10 @@ rule aa_extract_phage_lineages_for_R_seqkit:
 
 rule aa_extract_phage_lineages_for_R_join:
 	input:
-		seqs = os.path.join("results", "mmseqs_aa_out", "phage_seqs.fx2tab"),
-		table = os.path.join("results", "mmseqs_aa_out", "phage_table.tsv")
+		seqs = os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fx2tab"),
+		table = os.path.join("results", "results", "mmseqs_aa_out", "phage_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "phage_tax_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "phage_tax_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -217,10 +217,10 @@ rule aa_extract_phage_lineages_for_R_join:
 
 rule aa_extract_nonphage_viral_lineages_for_R_grep:
 	input:
-		viruses = os.path.join("results", "mmseqs_aa_out", "all_viruses_table.tsv"),
+		viruses = os.path.join("results", "results", "mmseqs_aa_out", "all_viruses_table.tsv"),
 		phagetax = PHAGE,
 	output:
-		os.path.join("results", "mmseqs_aa_out", "viruses_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "viruses_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -229,9 +229,9 @@ rule aa_extract_nonphage_viral_lineages_for_R_grep:
 
 rule aa_extract_nonphage_viral_lineages_for_R_cut:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "viruses_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "viruses_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.list")
+		os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.list")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -240,10 +240,10 @@ rule aa_extract_nonphage_viral_lineages_for_R_cut:
 
 rule aa_extract_nonphage_viral_lineages_for_R_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_aa_out", "viruses_seqs.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.list")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}
@@ -252,9 +252,9 @@ rule aa_extract_nonphage_viral_lineages_for_R_pullseq:
 
 rule aa_extract_unclassified_grep:
 	input:
-		os.path.join("results", "mmseqs_aa_out", "taxonomyResult.tsv")
+		os.path.join("results", "results", "mmseqs_aa_out", "taxonomyResult.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.list")
+		os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.list")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -266,10 +266,10 @@ rule aa_extract_unclassified_grep:
 
 rule aa_extract_unclassified_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.list")
 	output:
-		os.path.join("results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}

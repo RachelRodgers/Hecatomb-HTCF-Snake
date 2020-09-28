@@ -2,9 +2,9 @@
 
 rule ntcheck_annotate:
 	input:
-		aln = os.path.join("results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
+		aln = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
 	output:
-		os.path.join("results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_checked_lineage.tsv")
+		os.path.join("results", "results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_checked_lineage.tsv")
 	shell:
 		"""
 		module load {R}

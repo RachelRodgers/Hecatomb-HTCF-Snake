@@ -14,9 +14,9 @@ rule aacheck_create_querydb_from_viruses_seqs:
 	Create a sequence db from the viruses_seqs.fasta file (probably non-phage viral sequences)
 	"""
 	input:
-		os.path.join("results", "mmseqs_aa_out", "viruses_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.fasta")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -31,13 +31,13 @@ rule aacheck_taxonomy_search_alignment:
 	an alignment.
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK
 	params:
-		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
+		taxaDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
 	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "tmp_aa_checked")),
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
+		tmp = directory(os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "tmp_aa_checked")),
+		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
 	shell:
 		"""
@@ -56,13 +56,13 @@ rule aacheck_convert_taxonomy_result_to_m8:
 	Convert the alignment results DB (taxonomyResult) to a human-readable format
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK,
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
+		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	params:
-		alnDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
+		alnDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "aln.m8")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "aln.m8")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -74,12 +74,12 @@ rule aacheck_convert_taxonomy_result_to_m8:
 
 rule aacheck_extract_best_hit_from_taxonomy_result:
 	input:
-		os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult"),
-		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+		resultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult"),
+		bestResultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
 	output:
-		bestResultDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
+		bestResultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
 	shell:
 		"""
 		module load {MMSEQS}
@@ -91,13 +91,13 @@ rule aacheck_convert_best_hit:
 	Convert best hit from taxonomyResult (taxonomyResult.firsthit) to human readable
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK,
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
+		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
 	params:
-		alignmentDB = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
+		alignmentDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
 	threads: 16
 	shell:
 		"""
@@ -113,13 +113,13 @@ rule aacheck_taxonomy_search_lca:
 	LCA (taxonomy).
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		queryDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
 		targetDB = AATARGETCHECK
 	params:
-		taxaDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
+		taxaDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
 	output:
-		tmp = directory(os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "tmp_aa_checked")),
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
+		tmp = directory(os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "tmp_aa_checked")),
+		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
 	threads: 16
 	shell:
 		"""
@@ -139,12 +139,12 @@ rule aacheck_create_taxonomy_table_from_lca:
 	Create a TSV formatted taxonomy table from the LCA output
 	"""
 	input:
-		queryDB = os.path.join("results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
-		idx = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
+		queryDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB"),
+		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
 	params:
-		resultDB = os.path.join("results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
+		resultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
 	threads: 8
 	shell:
 		"""
@@ -159,10 +159,10 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 	taxonomy table for import into R as a phyloseq object
 	"""
 	input:
-		viruses = os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
+		viruses = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.tsv"),
 		phagetax = PHAGE
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -173,9 +173,9 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_cut:
 	input:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -184,10 +184,10 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_cut:
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.list")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}
@@ -196,9 +196,9 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_pullseq:
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
 	input:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
 	shell:
 		"""
 		module load {SEQKIT}
@@ -207,10 +207,10 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 	input:
-		fx2tab = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab"),
-		tsv = os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
+		fx2tab = os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab"),
+		tsv = os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
 	shell:
 		"""
 		join {input.fx2tab} {input.tsv} | \
@@ -221,9 +221,9 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 
 rule aacheck_extract_unclassified_lineages_grep:
 	input:
-		os.path.join("results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -232,10 +232,10 @@ rule aacheck_extract_unclassified_lineages_grep:
 
 rule aacheck_extract_unclassified_lineages_pullseq:
 	input:
-		seqtable = os.path.join("results", "seqtable.fasta"),
-		list = os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
+		seqtable = os.path.join("results", "results", "seqtable.fasta"),
+		list = os.path.join("results", "results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.list")
 	output:
-		os.path.join("results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
+		os.path.join("results", "results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
 	shell:
 		"""
 		module load {PULLSEQ}
