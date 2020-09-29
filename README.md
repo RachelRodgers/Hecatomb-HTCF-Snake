@@ -5,6 +5,8 @@
 3. Clone the repo:
 ```
 git clone --recurse-submodules https://github.com/RachelRodgers/hecatomb_htcf_snake.git
+git submodule init
+git submodule update
 ```
 4. Make a directory to hold the snakemake profile:
 ```
