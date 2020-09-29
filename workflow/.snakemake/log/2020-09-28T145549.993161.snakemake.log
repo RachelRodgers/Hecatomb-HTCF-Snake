@@ -1,3 +1,0 @@
-ModuleNotFoundError in line 12 of /scratch/mtblab/rachel/hecatomb_miner_test/toy/hecatomb_htcf_snake/workflow/Snakefile:
-No module named 'snakemake_helpers'
-  File "/scratch/mtblab/rachel/hecatomb_miner_test/toy/hecatomb_htcf_snake/workflow/Snakefile", line 12, in <module>
