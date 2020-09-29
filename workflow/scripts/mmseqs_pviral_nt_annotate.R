@@ -4,7 +4,7 @@
 
 #----- Load or install required packages -----#
 
-source("./scripts/snakemake_helpers/snakemake_helpers.R")
+source("./workflow/scripts/snakemake_helpers/snakemake_helpers.R")
 
 options(warn = -1) # suppress warning messages for clarity
 

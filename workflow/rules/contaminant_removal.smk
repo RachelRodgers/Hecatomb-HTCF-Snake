@@ -37,7 +37,7 @@ rule remove_leftmost_primerB:
 	output:
 		r1 = os.path.join("results", "QC", "step_1", PATTERN_R1 + ".s1.out.fastq"),
 		r2 = os.path.join("results", "QC", "step_1", PATTERN_R2 + ".s1.out.fastq"),
-                stats = os.path.join("QC", "step_1", "{sample}.s1.stats")
+                stats = os.path.join("results", "QC", "step_1", "{sample}.s1.stats")
 	threads: 8
 	shell:
 		"""

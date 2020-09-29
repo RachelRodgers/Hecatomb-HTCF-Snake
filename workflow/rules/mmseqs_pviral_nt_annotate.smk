@@ -8,5 +8,5 @@ rule nt_annotate:
 	shell:
 		"""
 		module load {R}
-		Rscript ./scripts/mmseqs_pviral_nt_annotate.R
+		Rscript ./workflow/scripts/mmseqs_pviral_nt_annotate.R
 		"""

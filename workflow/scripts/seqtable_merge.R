@@ -4,7 +4,7 @@
 
 #----- Load or install required packages -----#
 
-source("./scripts/snakemake_helpers/snakemake_helpers.R")
+source("./workflow/scripts/snakemake_helpers/snakemake_helpers.R")
 
 options(warn = -1) # suppress warning messages for clarity
 
@@ -23,7 +23,7 @@ for (package in requiredPackages) {
 
 cat("\nseqtable_merge: Reading sequencing tables.\n")
 
-files <- list.files(path = "results/QC/step_8/clustered/", 
+files <- list.files(path = "./results/QC/step_8/clustered/", 
                     pattern = "*_seqtable.txt", full.names = TRUE)
 
 #----- Reduce seqtables to a single table -----#
@@ -41,9 +41,9 @@ seqtable.all <- files %>%
 
 cat("\nseqtable merge: Writing count table.\n")
 
-dir.create(path = "./results", showWarnings = FALSE)
+dir.create(path = "./results/results/", showWarnings = FALSE)
 
-write_tsv(seqtable.all, path = "./results/seqtable.all", col_names=TRUE)
+write_tsv(seqtable.all, path = "./results/results/seqtable.all", col_names=TRUE)
 
 #----- Write tabular fasta (tab2fx) -----#
 
@@ -56,7 +56,7 @@ seqs.df <- seqs %>%
 	select(id, everything()) %>%
 	mutate_if(is.numeric, as.integer)
 
-write_tsv(seqs.df, "./results/seqtable.tab2fx", col_names = FALSE)
+write_tsv(seqs.df, "./results/results/seqtable.tab2fx", col_names = FALSE)
 
 #----- Save session information -----#
 

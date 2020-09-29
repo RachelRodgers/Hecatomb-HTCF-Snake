@@ -108,6 +108,6 @@ rule all:
 		os.path.join("results", "results", "aa.aln.m8"),
 		os.path.join("results", "results", "nt.aln.m8")
 
-rule clean:
-	shell:
-		"rm -rf ./results/"
+#rule clean:
+#	shell:
+#		"rm -rf ./results/"

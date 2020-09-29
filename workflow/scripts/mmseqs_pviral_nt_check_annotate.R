@@ -4,7 +4,7 @@
 
 #----- Load or install required packages -----#
 
-source("./scripts/snakemake_helpers/snakemake_helpers.R")
+source("./workflow/scripts/snakemake_helpers/snakemake_helpers.R")
 
 options(warn = -1) # suppress warning messages for clarity
 
@@ -22,8 +22,7 @@ for (package in requiredPackages) {
 
 #----- Read in path to accessionTaxa.sql -----#
 
-ncbiAccPath <- readLines(con = "./results/taxonomizr_ncbi_accession_path.txt", n = 1,
-												 warn = FALSE)
+ncbiAccPath <- readLines(con = "./results/taxonomizr_ncbi_accession_path.txt", n = 1, warn = FALSE)
 
 #----- Annotate mmseqs_nt_checked_out/resultDB.firsthit.m8 Sequences -----#
 
