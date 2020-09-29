@@ -14,7 +14,7 @@ mkdir -p ~/.config/snakemake/slurm_hecatomb
 ```
 cd hecatomb_htcf_snake
 cp slurm_config/config.yaml ~/.config/snakemake/slurm_hecatomb
-cp slurm_submit/*.py ~/.config/snakemake
+cp slurm-submit/*.py ~/.config/snakemake
 ```
 6. Create a directory to hold your raw sequencing reads and move your data to into that directory.
 7. Edit the hecatomb_config.yaml file to point to your data directory (under Paths: Reads) and edit the Read1 Read2 and Extension patterns as needed (under Patterns:).
