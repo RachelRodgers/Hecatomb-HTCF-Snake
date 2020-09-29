@@ -1,3 +1,6 @@
 [submodule "scripts/snakemake_helpers"]
 	path = scripts/snakemake_helpers
 	url = https://github.com/RachelRodgers/snakemake_helpers.git
+[submodule "slurm-submit"]
+	path = slurm-submit
+	url = https://github.com/RachelRodgers/slurm-submit.git
