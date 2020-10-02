@@ -9,6 +9,8 @@ rule seqtable_merge:
 	output:
 		seqtable = os.path.join("results", "results", "seqtable.all"),
 		tab2fa = os.path.join("results", "results", "seqtable.tab2fx")
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {R}

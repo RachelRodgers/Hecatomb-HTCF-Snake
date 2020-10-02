@@ -12,7 +12,7 @@ rule clumpify:
 	output:
 		r1 = os.path.join("results", "clumped", PATTERN_R1 + ".clumped.fastq.gz"),
 		r2 = os.path.join("results", "clumped", PATTERN_R2 + ".clumped.fastq.gz")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -38,7 +38,7 @@ rule remove_leftmost_primerB:
 		r1 = temp(os.path.join("results", "QC", "step_1", PATTERN_R1 + ".s1.out.fastq")),
 		r2 = temp(os.path.join("results", "QC", "step_1", PATTERN_R2 + ".s1.out.fastq")),
                 stats = os.path.join("results", "QC", "step_1", "{sample}.s1.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -70,7 +70,7 @@ rule remove_3prime_contaminant:
 		r1 = temp(os.path.join("results", "QC", "step_2", PATTERN_R1 + ".s2.out.fastq")),
 		r2 = temp(os.path.join("results", "QC", "step_2", PATTERN_R2 + ".s2.out.fastq")),
 		stats = os.path.join("results", "QC", "step_2", "{sample}.s2.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -101,7 +101,7 @@ rule remove_primer_free_adapter:
 		r1 = temp(os.path.join("results", "QC", "step_3", PATTERN_R1 + ".s3.out.fastq")),
 		r2 = temp(os.path.join("results", "QC", "step_3", PATTERN_R2 + ".s3.out.fastq")),
 		stats = os.path.join("results", "QC", "step_3", "{sample}.s3.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -132,7 +132,7 @@ rule remove_adapter_free_primer:
 		r1 = temp(os.path.join("results", "QC", "step_4", PATTERN_R1 + ".s4.out.fastq")),
 		r2 = temp(os.path.join("results", "QC", "step_4", PATTERN_R2 + ".s4.out.fastq")),
 		stats = os.path.join("results", "QC", "step_4", "{sample}.s4.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -163,7 +163,7 @@ rule remove_vector_contamination:
 		r1 = temp(os.path.join("results", "QC", "step_5", PATTERN_R1 + ".s5.out.fastq")),
 		r2 = temp(os.path.join("results", "QC", "step_5", PATTERN_R2 + ".s5.out.fastq")),
 		stats = os.path.join("results", "QC", "step_5", "{sample}.s5.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -242,7 +242,7 @@ rule trim_low_quality:
 		r2 = os.path.join("results", "QC", "step_7", PATTERN_R2 + ".s7.out.fastq"),
 		singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons.s7.out.fastq"),
 		stats = os.path.join("results", "QC", "step_7", "{sample}.s7.stats")
-	threads: 8
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -267,6 +267,8 @@ rule get_r1_singletons:
 		singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons.s7.out.fastq")
 	output:
 		r1singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R1.out.fastq")
+	resources: 
+		mem_mb = 4000
 	shell:
 		"""
 		grep -A 3 '1:N:' {input.singletons} | sed '/^--$/d' > {output.r1singletons}
@@ -280,6 +282,8 @@ rule get_r2_singletons:
 		singletons = os.path.join("results", "QC", "step_7", "{sample}.singletons.s7.out.fastq")
 	output:
 		r2singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R2.out.fastq")
+	resources: 
+		mem_mb = 4000
 	shell:
 		"""
 		grep -A 3 '2:N:' {input.singletons} | sed '/^--$/d' > {output.r2singletons}
@@ -294,6 +298,8 @@ rule concat_r1:
 		r1singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R1.out.fastq")
 	output:
 		r1combo = os.path.join("results", "QC", "step_7", PATTERN_R1 + ".s7.combined.out.fastq")
+	resources: 
+		mem_mb = 4000
 	shell:
 		"""
 		cat {input.r1} {input.r1singletons} > {output.r1combo} 
@@ -308,6 +314,8 @@ rule concat_r2:
                 r2singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R2.out.fastq")
 	output:
 		r2combo = os.path.join("results", "QC", "step_7", PATTERN_R2 + ".s7.combined.out.fastq")
+	resources: 
+		mem_mb = 4000
 	shell:
 		"""
 		cat {input.r2} {input.r2singletons} > {output.r2combo}
@@ -324,7 +332,7 @@ rule remove_bacteria:
 		mapped = os.path.join("results", "QC", "step_8", "{sample}_bacterial.fastq"),
 		unmapped = os.path.join("results", "QC", "step_8", "{sample}_viral_amb.fastq"),
 		scafstats = os.path.join("results", "QC", "step_8", "{sample}_scafstats.txt")
-	threads: 16
+	threads: 8
 	resources:
 		mem_mb=50000
 	shell:

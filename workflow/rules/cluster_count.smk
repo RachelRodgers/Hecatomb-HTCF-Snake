@@ -10,9 +10,7 @@ rule remove_exact_duplicates:
 		os.path.join("results", "QC", "step_8", "{sample}_viral_amb.fastq")
 	output:
 		os.path.join("results", "QC", "step_8", "clustered", PATTERN_R1 + ".s8.deduped.out.fastq")
-	threads: 8
-	resources: 
-		mem_mb=50000
+	threads: 4
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -35,8 +33,8 @@ rule dereplicate:
 		fa = os.path.join("results", "QC", "step_8", "clustered", "{sample}_best.fasta"),
 		stats = os.path.join("results", "QC", "step_8", "clustered", "{sample}_stats.txt")
 	threads: 8
-	#resources:
-		#mem_mb = 50000
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -60,8 +58,6 @@ rule reformat:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_best.fasta")
 	output:
 		out = os.path.join("results", "QC", "step_8", "clustered", "{sample}_reformatted.fasta")
-	#resources:
-		#mem_mb=50000
 	shell:
 		"""
 		module load {BBTOOLS}
@@ -82,6 +78,8 @@ rule extract_sequences:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_reformatted.fasta")
 	output:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_seqs.txt")
+	resources:
+		mem_mb = 4000
 	shell:
 		"grep -v '>' {input} | sed '1i sequence' > {output}"
 
@@ -93,6 +91,8 @@ rule extract_counts:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_stats.txt")
 	output:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_counts.txt")
+	resources:
+		mem_mb = 4000
 	shell:
 		"cut -f 2 {input} | sed '1s/size/{wildcards.sample}/' > {output}"
 
@@ -105,5 +105,7 @@ rule create_sequence_table:
 		counts = os.path.join("results", "QC", "step_8", "clustered", "{sample}_counts.txt")
 	output:
 		os.path.join("results", "QC", "step_8", "clustered", "{sample}_seqtable.txt")
+	resources:
+		mem_mb = 4000
 	shell:
 		"paste {input.seqs} {input.counts} > {output}"

@@ -33,6 +33,8 @@ rule nt_search:
 		idx = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.index"),
 		tmp = directory(os.path.join("results", "results", "mmseqs_nt_out", "tmp_nt"))
 	threads: 16
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -71,6 +73,9 @@ rule nt_convert_top_hit_from_search:
 		alnDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit")
 	output:
 		os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit.m8")
+	resources:
+		cpus = 1
+		mem_mb = 1000
 	shell:
 		"""
 		module load {MMSEQS}

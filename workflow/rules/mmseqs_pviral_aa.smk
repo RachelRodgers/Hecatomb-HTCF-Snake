@@ -51,6 +51,8 @@ rule aa_taxonomy_search_alignment:
 		tmp = directory(os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "tmp_aa")),
 		idx = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -77,6 +79,8 @@ rule aa_convert_taxonomy_alignment_results_to_m8:
 		alnDB = os.path.join("results", "results", "mmseqs_aa_out", "tax_search_alignment", "taxonomyResult")
 	output:
 		os.path.join("results", "results", "mmseqs_aa_out", "aln.m8")
+	resources:
+		mem_mb = 4000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -100,6 +104,8 @@ rule aa_taxonomy_search_lca:
 		tmp = directory(os.path.join("results", "results", "mmseqs_aa_out", "tmp_aa")),
 		idx = os.path.join("results", "results", "mmseqs_aa_out", "lcaDB.index")
 	threads: 16
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -126,6 +132,8 @@ rule aa_convert_taxonomy_lca_results_to_tsv:
 	output:
 		os.path.join("results", "results", "mmseqs_aa_out", "taxonomyResult.tsv")
 	threads: 8
+	resources:
+		mem_mb = 4000
 	shell:
 		"""
 		module load {MMSEQS}

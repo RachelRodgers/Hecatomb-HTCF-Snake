@@ -39,6 +39,8 @@ rule aacheck_taxonomy_search_alignment:
 		tmp = directory(os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "tmp_aa_checked")),
 		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult.index")
 	threads: 16
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -63,6 +65,8 @@ rule aacheck_convert_taxonomy_result_to_m8:
 		alnDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_alignment", "taxonomyResult")
 	output:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "aln.m8")
+	resources:
+		mem_mb = 4000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -98,7 +102,7 @@ rule aacheck_convert_best_hit:
 		alignmentDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit")
 	output:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.m8")
-	threads: 16
+	threads: 4
 	shell:
 		"""
 		module load {MMSEQS}
@@ -121,6 +125,8 @@ rule aacheck_taxonomy_search_lca:
 		tmp = directory(os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "tmp_aa_checked")),
 		idx = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB.index")
 	threads: 16
+	resources:
+		mem_mb = 64000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -145,7 +151,9 @@ rule aacheck_create_taxonomy_table_from_lca:
 		resultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "tax_search_lca", "lcaDB")
 	output:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.tsv")
-	threads: 8
+	threads: 4
+	resources:
+		mem_mb = 4000
 	shell:
 		"""
 		module load {MMSEQS}
@@ -211,6 +219,9 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_join:
 		tsv = os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_table.tsv")
 	output:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_tax_table.tsv")
+	resources:
+		cpus=1,
+		mem_mb=1000
 	shell:
 		"""
 		join {input.fx2tab} {input.tsv} | \
