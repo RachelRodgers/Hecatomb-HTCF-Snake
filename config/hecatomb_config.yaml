@@ -1,8 +1,8 @@
 ---
 Patterns:
-  Read1Identifiers: ["_1", "_R1"]
-  Read2Identifiers: ["_2", "_R2"]
-  ReadExtensions: [".fq", ".fastq", ".fastq.gz"]
+  Read1Identifiers: ["_R1_"]
+  Read2Identifiers: ["_R2_"]
+  ReadExtensions: [".fastq.gz"]
 
 Paths:
   Reads: data

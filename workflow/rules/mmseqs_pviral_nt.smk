@@ -74,7 +74,7 @@ rule nt_convert_top_hit_from_search:
 	output:
 		os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit.m8")
 	resources:
-		cpus = 1
+		cpus = 1,
 		mem_mb = 1000
 	shell:
 		"""
