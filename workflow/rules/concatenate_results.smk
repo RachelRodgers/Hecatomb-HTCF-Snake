@@ -31,7 +31,7 @@ rule join_aa_and_nt_files:
 		aa = os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_table_edited.tsv"),
 		nt = os.path.join("results", "results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_checked_lineage_edited.tsv")
 	output:
-		os.path.join("results", "results", "viruses_tax_table_tmp.tsv")
+		temp(os.path.join("results", "results", "viruses_tax_table_tmp.tsv"))
 	resources:
 		cpus=1,
 		mem_mb=1000
@@ -53,7 +53,7 @@ rule fix_phage_results_1:
 	input:
 		os.path.join("results", "results", "mmseqs_aa_out", "phage_table.tsv")
 	output:
-		os.path.join("results", "results", "phage_tax_table_tmp.tsv")
+		temp(os.path.join("results", "results", "phage_tax_table_tmp.tsv"))
 	resources:
 		cpus=1,
 		mem_mb=1000
