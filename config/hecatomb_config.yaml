@@ -14,7 +14,6 @@ Paths:
   TargetMMseqsNT: /scratch/ref/hecatomb_databases/refseq_virus_nt_UniVec_masked/nt.fnaDB
   TargetMMseqsNTCheck: /scratch/ref/hecatomb_databases/bac_virus_masked/nt.fnaDB
   
-
 DatabaseFiles:
   Phage: /scratch/ref/hecatomb_databases/phage_taxonomic_lineages_2020.txt
   NCBIAccession: /scratch/ref/hecatomb_databases/taxonomizr/accessionTaxa.sql
@@ -25,6 +24,13 @@ Tools:
   Seqkit: seqkit/0.10.1
   Pullseq: pullseq/1.0.2
   MMseqs: mmseqs2/10-6d92c
+  Megahit: megahit/1.1.4
+  CAT: /home/rachel.rodgers/software/CAT/CAT_pack/CAT
+  Diamond: 
+  Prodigal: prodigal/2.6.3
+
+ToolSettings:
+  CATContigMin: 1000
 
 System:
   # How much memory to allocate to java
