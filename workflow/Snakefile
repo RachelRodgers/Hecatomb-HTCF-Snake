@@ -48,7 +48,7 @@ R = config["Tools"]["R"]
 SEQKIT = config["Tools"]["Seqkit"]
 PULLSEQ = config["Tools"]["Pullseq"]
 MMSEQS = config["Tools"]["MMseqs"]
-MEGATHIT = config["Tools"]["Megahit"]
+MEGAHIT = config["Tools"]["Megahit"]
 
 # CAT Contig Minimum Length
 MIN = config["ToolSettings"]["CATContigMin"]
@@ -64,6 +64,8 @@ SAMPLES, = glob_wildcards(os.path.join(READDIR, "renamed", "{sample}_R1.fastq.gz
 
 PATTERN_R1 = "{sample}_R1"
 PATTERN_R2 = "{sample}_R2"
+
+SAMPLE_NAME = "{sample}"
 
 #----- Snakemake Workflow -----# 
 
@@ -114,9 +116,8 @@ rule all:
 		os.path.join("results", "results", "phage_tax_table.tsv"),
 		os.path.join("results", "results", "aa.aln.m8"),
 		os.path.join("results", "results", "nt.aln.m8"),
-		expand(os.path.join("results", "assembly", "stats", "{sample}_uniq_kmer_stats.txt"), sample = SAMPLES),
-		expand(os.path.join("results", "assembly", "megahit_contigs", "{sample}_cov.txt"), sample = SAMPLES),
-		expand(os.path.join("results", "assembly", "megahit_contigs", "{sample}_mapped.fastq"), sample = SAMPLES),
-		expand(os.path.join("results", "assembly", "megahit_contigs", "{sample}_unmapped.fastq"), sample = SAMPLES)
+		expand(os.path.join("results", "assembly", "{sample}_norm.hist"), sample = SAMPLES),
+		expand(os.path.join("results", "assembly", "{sample}_megahit_out"), sample = SAMPLES)
+
 
 
