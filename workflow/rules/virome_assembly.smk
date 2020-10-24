@@ -33,7 +33,7 @@ rule assembly_megahit:
 		r1 = os.path.join("results", "assembly", PATTERN_R1 + ".norm.out.fastq"),
 		r2 = os.path.join("results", "assembly", PATTERN_R2 + ".norm.out.fastq")
 	params:
-		prefix = "{sample}.mh."#,
+		prefix = "{sample}.mh"#,
 		#outdir = directory(os.path.join("results", "assembly", "{sample}_megahit_out"))
 	output:
 		#fa = os.path.join("results", "assembly", "{sample}_megahit_out", "{sample}.mh.contigs.fa")
