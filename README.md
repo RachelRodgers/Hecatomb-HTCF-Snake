@@ -19,6 +19,7 @@ cp slurm-submit/*.py ~/.config/snakemake
 6. Create a directory to hold your raw sequencing reads and move your data to into that directory.
 7. Edit the hecatomb_config.yaml file (under /config/) to point to your data directory (under Paths: Reads) and edit the Read1 Read2 and Extension patterns as needed (under Patterns:). Note if your files contain both \_R1.fastq.gz and \_R1_L001.fastq.gz style designators, "\_R1" is sufficient to capture both.  Input files extensions can be .fastq or .fastq.gz.  Uncompressed input files will be gzipped before the pipeline starts.
 8. Submit in one of two ways:
+	
 	a. With sbatch script (preferred):
 	```
 	sbatch submit_hecatomb_snake.sbatch
