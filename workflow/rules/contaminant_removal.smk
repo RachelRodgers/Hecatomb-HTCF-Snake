@@ -291,11 +291,13 @@ rule get_r2_singletons:
 
 rule concat_r1:
 	"""
-	Step 7d: Concatenate R1 reads & singletons
+	Step 7d: Concatenate R1 reads & singletons. 
+	r2singletons is a dummy to force previous r2 rules to run for the purposes of virome assembly script.
 	"""
 	input:
 		r1 = os.path.join("results", "QC", "step_7", PATTERN_R1 + ".s7.out.fastq"),
-		r1singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R1.out.fastq")
+		r1singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R1.out.fastq"),
+		r2singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R2.out.fastq")
 	output:
 		r1combo = os.path.join("results", "QC", "step_7", PATTERN_R1 + ".s7.combined.out.fastq")
 	resources: 
