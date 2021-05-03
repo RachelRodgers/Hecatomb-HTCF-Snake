@@ -6,19 +6,23 @@
 ```
 git clone --recurse-submodules https://github.com/RachelRodgers/hecatomb_htcf_snake.git
 ```
-4. Make a directory to hold the snakemake profile:
+4. Edit the config.yaml file in the config directory to use your email in case of job failure:
+```
+--mail-user=yourEmailAddress
+```
+5. Make a directory to hold the snakemake profile:
 ```
 mkdir -p ~/.config/snakemake/slurm_hecatomb
 ```
-5. Copy the cluster submit and profile files to the appropriate locations:
+6. Copy the cluster submit and profile files to the appropriate locations:
 ```
 cd hecatomb_htcf_snake
 cp config/config.yaml ~/.config/snakemake/slurm_hecatomb
 cp slurm-submit/*.py ~/.config/snakemake
 ```
-6. Create a directory to hold your raw sequencing reads and move your data to into that directory.
-7. Edit the hecatomb_config.yaml file (under /config/) to point to your data directory (under Paths: Reads) and edit the Read1 Read2 and Extension patterns as needed (under Patterns:). Note if your files contain both \_R1.fastq.gz and \_R1_L001.fastq.gz style designators, "\_R1" is sufficient to capture both.  Input files extensions can be .fastq or .fastq.gz.  Uncompressed input files will be gzipped before the pipeline starts.
-8. Submit in one of two ways:
+7. Create a directory to hold your raw sequencing reads and move your data to into that directory.
+8. Edit the hecatomb_config.yaml file (under /config/) to point to your data directory (under Paths: Reads) and edit the Read1 Read2 and Extension patterns as needed (under Patterns:). Note if your files contain both \_R1.fastq.gz and \_R1_L001.fastq.gz style designators, "\_R1" is sufficient to capture both.  Input files extensions can be .fastq or .fastq.gz.  Uncompressed input files will be gzipped before the pipeline starts.
+9. Submit in one of two ways:
 	
 	a. With sbatch script (preferred):
 	```
@@ -38,4 +42,4 @@ cp slurm-submit/*.py ~/.config/snakemake
 	# production run (run steps):
 	snakemake --profile slurm_hecatomb
 	```
-9. See slurm output files in the logs_slurm/ directory which will generate inside the hecatomb_htcf_snake/ directory.
+10. See slurm output files in the logs_slurm/ directory which will generate inside the hecatomb_htcf_snake/ directory.
