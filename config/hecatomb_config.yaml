@@ -28,4 +28,4 @@ Tools:
 
 System:
   # How much memory to allocate to java
-  Memory: -Xmx48g
+  Memory: -Xmx250g

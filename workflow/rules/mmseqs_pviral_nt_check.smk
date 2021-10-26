@@ -110,7 +110,7 @@ rule ntcheck_mmseqs_search:
 		tmp = directory(os.path.join("results", "results", "mmseqs_nt_checked_out", "tmp_nt_check"))
 	threads: 16
 	resources:
-		mem_mb = 64000
+		mem_mb = 250000
 	shell:
 		"""
 		module load {MMSEQS}
