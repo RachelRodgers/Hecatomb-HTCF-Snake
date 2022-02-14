@@ -279,7 +279,7 @@ rule get_r2_singletons:
 	Step 7c: Split R2 singletons
 	"""
 	input:
-		singletons = os.path.join("results", "QC", "step_7", "{sample}.singletons.s7.out.fastq")
+		singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons.s7.out.fastq")
 	output:
 		r2singletons = os.path.join("results", "QC", "step_7", "{sample}_singletons_R2.out.fastq")
 	resources: 
