@@ -15,7 +15,7 @@ rule clumpify:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		clumpify.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -41,7 +41,7 @@ rule remove_leftmost_primerB:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -73,7 +73,7 @@ rule remove_3prime_contaminant:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -104,7 +104,7 @@ rule remove_primer_free_adapter:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -135,7 +135,7 @@ rule remove_adapter_free_primer:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -166,7 +166,7 @@ rule remove_vector_contamination:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -196,7 +196,7 @@ rule host_removal:
 		mem_mb=50000
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbmap.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -222,7 +222,7 @@ rule repair:
 		r2 = temp(os.path.join("results", "QC", "step_6", PATTERN_R2 + ".s6.out.fastq"))
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		repair.sh \
 			in={input.unmapped} \
 			out={output.r1} \
@@ -245,7 +245,7 @@ rule trim_low_quality:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
@@ -337,7 +337,7 @@ rule remove_bacteria:
 		mem_mb=50000
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		bbmap.sh \
 			in={input.r1combo} \
 			path={input.reference} \

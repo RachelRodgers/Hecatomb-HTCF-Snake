@@ -13,7 +13,7 @@ rule remove_exact_duplicates:
 	threads: 4
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		dedupe.sh \
 			in={input} \
 			ow=t \
@@ -37,7 +37,7 @@ rule dereplicate:
 		mem_mb = 250000
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		dedupe.sh \
 			in={input} \
 			ow=t \
@@ -60,7 +60,7 @@ rule reformat:
 		out = os.path.join("results", "QC", "step_8", "clustered", "{sample}_reformatted.fasta")
 	shell:
 		"""
-		module load {BBTOOLS}
+		bash {BBTOOLS} \
 		reformat.sh \
 			in={input} \
 			out={output} \
