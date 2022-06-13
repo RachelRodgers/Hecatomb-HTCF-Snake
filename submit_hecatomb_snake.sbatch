@@ -1,5 +1,7 @@
 #!/bin/bash
 
-ml snakemake/5.10.0-python-3.6.5
+eval "$(conda shell.bash hook)"
 
-snakemake --profile slurm_hecatomb --rerun-incomplete
+conda activate snakemake
+
+snakemake --profile slurm_hecatomb --rerun-incomplete --until get_r1_singletons

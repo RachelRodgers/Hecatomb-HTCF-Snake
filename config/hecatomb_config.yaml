@@ -5,7 +5,7 @@ Patterns:
   ReadExtensions: [".fastq.gz"]
 
 Paths:
-  Reads: data
+  Reads: ../test_subset
   Contaminants: /ref/lhlab/data/hecatomb_databases/contaminants
   Host: /ref/lhlab/data/hecatomb_databases/human_masked
   Bacteria: /ref/lhlab/data/hecatomb_databases/bac_giant/unique_species
