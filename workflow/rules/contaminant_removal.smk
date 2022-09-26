@@ -15,8 +15,7 @@ rule clumpify:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS} \
-		clumpify.sh \
+		bash /ref/lhlab/software/bbmap_38.96/bbmap/clumpify.sh/clumpify.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			out={output.r1} \
