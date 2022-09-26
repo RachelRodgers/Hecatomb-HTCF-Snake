@@ -13,6 +13,6 @@ rule seqtable_merge:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {R}
+		{R}
 		Rscript ./workflow/scripts/seqtable_merge.R
 		"""

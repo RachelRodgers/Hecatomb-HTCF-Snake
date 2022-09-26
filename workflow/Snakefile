@@ -2,6 +2,8 @@
 Master Snakefile for running the Hecatomb pipeline on HTCF.
 
 Rachel Rodgers, Sep 2020
+
+Updates for new HTCF cluster made in Sep 2022
 """ 
 
 import os

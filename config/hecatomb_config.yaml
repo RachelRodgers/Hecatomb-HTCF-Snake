@@ -21,8 +21,8 @@ DatabaseFiles:
 
 Tools:
   BBTools: /ref/lhlab/software/bbmap_38.96/bbmap/
-  R: r/3.6.3-python-3.6.5-java-11
-  Seqkit: seqkit/0.10.1
+  R: eval $( spack load --sh r@3.6.3 )
+  Seqkit: eval $( spack load --sh seqkit@0.10.1 )
   Pullseq: pullseq/1.0.2
   MMseqs: mmseqs2/10-6d92c
 
