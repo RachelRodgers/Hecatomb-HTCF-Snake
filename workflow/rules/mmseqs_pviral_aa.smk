@@ -33,7 +33,7 @@ rule aa_create_querydb_from_seqtable:
 	shell:
 		"""
 		{MMSEQS} createdb \
-			{input} {output} --dont-shuffle 0 --dbtype 0
+			{input} {output} --dbtype 0
 		"""
 
 rule aa_taxonomy_search_alignment:
@@ -109,12 +109,10 @@ rule aa_taxonomy_search_lca:
 		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
-			--start-sens 1 \
-			--sens-steps 3 \
 			-s 7 \
 			--search-type 2 \
-            --tax-lineage true \
-			--lca-ranks "superkingdom:phylum:class:order:family:genus:species"
+			--tax-lineage 1 \
+			--lca-ranks "superkingdom,phylum,class,order,family,genus,species"
 		"""
 
 rule aa_convert_taxonomy_lca_results_to_tsv:
