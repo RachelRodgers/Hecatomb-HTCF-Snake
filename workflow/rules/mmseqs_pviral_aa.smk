@@ -18,7 +18,7 @@ rule aa_convert_seqtable_to_fasta:
 		os.path.join("results", "results", "seqtable.fasta")
 	shell:
 		"""
-		module load {SEQKIT}
+		{SEQKIT}
 		seqkit tab2fx {input} -o {output} -w 5000 -o {output}
 		"""
 
@@ -32,8 +32,8 @@ rule aa_create_querydb_from_seqtable:
 		os.path.join("results", "results", "mmseqs_aa_out", "seqtable_queryDB")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createdb {input} {output} --dont-shuffle 0 --dbtype 0
+		{MMSEQS} createdb \
+			{input} {output} --dont-shuffle 0 --dbtype 0
 		"""
 
 rule aa_taxonomy_search_alignment:
@@ -55,8 +55,7 @@ rule aa_taxonomy_search_alignment:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs taxonomy \
+		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
 			--start-sens 1 \
@@ -83,8 +82,7 @@ rule aa_convert_taxonomy_alignment_results_to_m8:
 		mem_mb = 4000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs convertalis \
+		{MMSEQS} convertalis \
 			{input.queryDB} {input.targetDB} {params.alnDB} {output} \
 			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln"
 		"""
@@ -108,8 +106,7 @@ rule aa_taxonomy_search_lca:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs taxonomy \
+		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
 			--start-sens 1 \
@@ -136,8 +133,8 @@ rule aa_convert_taxonomy_lca_results_to_tsv:
 		mem_mb = 4000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createtsv {input.queryDB} {params.resultDB} {output} \
+		{MMSEQS} createtsv \
+			{input.queryDB} {params.resultDB} {output} \
 			--threads {threads}
 		"""
 
@@ -192,7 +189,8 @@ rule aa_extract_phage_lineages_for_R_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ} 
+		eval "$(conda shell.bash hook)"
+		conda activate {PULLSEQ} 
         pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
@@ -203,7 +201,7 @@ rule aa_extract_phage_lineages_for_R_seqkit:
 		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fx2tab")
 	shell:
 		"""
-		module load {SEQKIT}
+		{SEQKIT}
         seqkit fx2tab {input} > {output}
 		"""
 
@@ -254,7 +252,8 @@ rule aa_extract_nonphage_viral_lineages_for_R_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
+		eval "$(conda shell.bash hook)"
+		conda activate {PULLSEQ}
 		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
@@ -280,6 +279,7 @@ rule aa_extract_unclassified_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
+		eval "$(conda shell.bash hook)"
+		conda activate {PULLSEQ}
 		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
