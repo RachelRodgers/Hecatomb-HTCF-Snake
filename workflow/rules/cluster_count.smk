@@ -33,7 +33,7 @@ rule dereplicate:
 		stats = os.path.join("results", "QC", "step_8", "clustered", "{sample}_stats.txt")
 	threads: 8
 	resources:
-		mem_mb = 250000
+		mem_mb = 96000
 	shell:
 		"""
 		bash {BBTOOLS}dedupe.sh \

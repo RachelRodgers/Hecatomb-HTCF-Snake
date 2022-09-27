@@ -5,7 +5,7 @@ Patterns:
   ReadExtensions: [".fastq.gz"]
 
 Paths:
-  Reads: ../test_subset
+  Reads: data
   Contaminants: /ref/lhlab/data/hecatomb_databases/contaminants
   Host: /ref/lhlab/data/hecatomb_databases/human_masked
   Bacteria: /ref/lhlab/data/hecatomb_databases/bac_giant/unique_species
@@ -28,4 +28,4 @@ Tools:
 
 System:
   # How much memory to allocate to java
-  Memory: -Xmx148g
+  Memory: -Xmx96g
