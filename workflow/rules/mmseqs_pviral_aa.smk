@@ -187,9 +187,7 @@ rule aa_extract_phage_lineages_for_R_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "phage_seqs.fasta")
 	shell:
 		"""
-		eval "$(conda shell.bash hook)"
-		conda activate {PULLSEQ} 
-        pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule aa_extract_phage_lineages_for_R_seqkit:
@@ -200,7 +198,7 @@ rule aa_extract_phage_lineages_for_R_seqkit:
 	shell:
 		"""
 		{SEQKIT}
-        seqkit fx2tab {input} > {output}
+		seqkit fx2tab {input} > {output}
 		"""
 
 rule aa_extract_phage_lineages_for_R_join:
@@ -250,9 +248,7 @@ rule aa_extract_nonphage_viral_lineages_for_R_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "viruses_seqs.fasta")
 	shell:
 		"""
-		eval "$(conda shell.bash hook)"
-		conda activate {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule aa_extract_unclassified_grep:
@@ -277,7 +273,5 @@ rule aa_extract_unclassified_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_out", "pviral_aa_unclassified_seqs.fasta")
 	shell:
 		"""
-		eval "$(conda shell.bash hook)"
-		conda activate {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
