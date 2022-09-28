@@ -7,6 +7,6 @@ rule nt_annotate:
 		os.path.join("results", "results", "mmseqs_nt_checked_out", "mmseqs_pviral_nt_lineage.tsv")
 	shell:
 		"""
-		module load {R}
+		{R}
 		Rscript ./workflow/scripts/mmseqs_pviral_nt_annotate.R
 		"""

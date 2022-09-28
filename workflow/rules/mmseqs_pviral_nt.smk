@@ -14,8 +14,8 @@ rule nt_create_querydb:
 		os.path.join("results", "results", "mmseqs_nt_out", "seqtable_queryDB")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createdb {input} {output} --dbtype 2
+		{MMSEQS} createdb \
+			{input} {output} --dbtype 2
 		"""
 
 rule nt_search:
@@ -37,8 +37,8 @@ rule nt_search:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs search {input.queryDB} {input.targetDB} \
+		{MMSEQS} search \
+			{input.queryDB} {input.targetDB} \
 			{params.alnDB} {output.tmp} \
 			-a \
 			-e 0.000001 \
@@ -57,8 +57,8 @@ rule nt_extract_top_hit_from_search:
 		bestResultDB = os.path.join("results", "results", "mmseqs_nt_out", "resultDB.firsthit")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs filterdb {params.resultDB} {output.bestResultDB} \
+		{MMSEQS} filterdb \
+			{params.resultDB} {output.bestResultDB} \
 			--extract-lines 1 \
 			--threads {threads}
 		"""
@@ -78,8 +78,7 @@ rule nt_convert_top_hit_from_search:
 		mem_mb = 1000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs convertalis \
+		{MMSEQS} convertalis \
 			{input.queryDB} {input.targetDB} {input.alnDB} {output} \
 			--threads {threads}
 		"""

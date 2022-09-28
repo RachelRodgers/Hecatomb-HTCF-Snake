@@ -39,8 +39,7 @@ rule ntcheck_extract_phage_lineages_from_pviralNT_pullseq:
 		os.path.join("results", "results", "mmseqs_nt_checked_out", "phage_nt_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_tail:
@@ -76,8 +75,7 @@ rule ntcheck_extract_nonphage_viral_lineages_from_pviralNT_pullseq:
 		os.path.join("results", "results", "mmseqs_nt_checked_out", "pviral_virus_nt_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule ntcheck_create_queryDB_from_nonphage_viral_lineages:
@@ -90,8 +88,7 @@ rule ntcheck_create_queryDB_from_nonphage_viral_lineages:
 		os.path.join("results", "results", "mmseqs_nt_checked_out", "seqtable_queryDB")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createdb {input} {output} --dbtype 2
+		{MMSEQS} createdb {input} {output} --dbtype 2
 		"""
 
 rule ntcheck_mmseqs_search:
@@ -113,8 +110,8 @@ rule ntcheck_mmseqs_search:
 		mem_mb = 250000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs search {input.queryDB} {input.targetDB} \
+		{MMSEQS} search \
+			{input.queryDB} {input.targetDB} \
 			{params.alnDB} {output.tmp} \
 			-a \
 			-e 0.000001 \
@@ -133,8 +130,8 @@ rule ntcheck_extract_top_hit_from_search:
 		bestResultDB = os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs filterdb {params.resultDB} {output.bestResultDB} \
+		{MMSEQS} filterdb \
+			{params.resultDB} {output.bestResultDB} \
 			--extract-lines 1 \
 			--threads {threads}
 		"""
@@ -151,8 +148,7 @@ rule ntcheck_convert_top_hit_from_search:
 		os.path.join("results", "results", "mmseqs_nt_checked_out", "resultDB.firsthit.m8")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs convertalis \
+		{MMSEQS} convertalis \
 			{input.queryDB} {input.targetDB} {input.alnDB} {output} \
 			--threads {threads}
 		"""

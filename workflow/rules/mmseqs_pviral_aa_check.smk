@@ -19,8 +19,8 @@ rule aacheck_create_querydb_from_viruses_seqs:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "viral_seqs_queryDB")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createdb {input} {output} --dont-shuffle 0 --dbtype 0
+		{MMSEQS} createdb \
+			{input} {output} --dbtype 0
 		"""
 
 rule aacheck_taxonomy_search_alignment:
@@ -43,8 +43,7 @@ rule aacheck_taxonomy_search_alignment:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs taxonomy \
+		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
 			-s 7 \
@@ -69,8 +68,7 @@ rule aacheck_convert_taxonomy_result_to_m8:
 		mem_mb = 4000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs convertalis \
+		{MMSEQS} convertalis \
 			{input.queryDB} {input.targetDB} {params.alnDB} {output} \
 			--format-output "query,target,pident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,qaln,taln" \
 			--threads 16
@@ -86,8 +84,8 @@ rule aacheck_extract_best_hit_from_taxonomy_result:
 		bestResultDB = os.path.join("results", "results", "mmseqs_aa_checked_out", "taxonomyResult.firsthit.dbtype")
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs filterdb {params.resultDB} {params.bestResultDB} --extract-lines 1
+		{MMSEQS} filterdb \
+			{params.resultDB} {params.bestResultDB} --extract-lines 1
 		"""
 
 rule aacheck_convert_best_hit:
@@ -105,8 +103,8 @@ rule aacheck_convert_best_hit:
 	threads: 4
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs convertalis {input.queryDB} {input.targetDB} {params.alignmentDB} {output} --threads {threads}
+		{MMSEQS} convertalis \
+			{input.queryDB} {input.targetDB} {params.alignmentDB} {output} --threads {threads}
 		"""
 
 rule aacheck_taxonomy_search_lca:
@@ -129,14 +127,13 @@ rule aacheck_taxonomy_search_lca:
 		mem_mb = 64000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs taxonomy \
+		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
 			-a \
 			-s 7 \
 			--search-type 2 \
 			--tax-lineage true \
-			--lca-ranks "superkingdom:phylum:class:order:family:genus:species" \
+			--lca-ranks "superkingdom,phylum,class,order,family,genus,species" \
 			--threads {threads}
 		"""
 
@@ -156,8 +153,8 @@ rule aacheck_create_taxonomy_table_from_lca:
 		mem_mb = 4000
 	shell:
 		"""
-		module load {MMSEQS}
-		mmseqs createtsv {input.queryDB} {params.resultDB} {output} \
+		{MMSEQS} createtsv \
+			{input.queryDB} {params.resultDB} {output} \
 			--threads {threads}
 		"""
 
@@ -198,8 +195,7 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
@@ -209,7 +205,7 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_seqkit:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "viruses_checked_aa_seqs.fx2tab")
 	shell:
 		"""
-		module load {SEQKIT}
+		{SEQKIT}
 		seqkit fx2tab {input} > {output}
 		"""
 
@@ -249,6 +245,5 @@ rule aacheck_extract_unclassified_lineages_pullseq:
 		os.path.join("results", "results", "mmseqs_aa_checked_out", "unclassified_checked_aa_seqs.fasta")
 	shell:
 		"""
-		module load {PULLSEQ}
-		pullseq -i {input.seqtable} -n {input.list} -l 5000 > {output}
+		{PULLSEQ} -i {input.seqtable} -n {input.list} -l 5000 > {output}
 		"""
