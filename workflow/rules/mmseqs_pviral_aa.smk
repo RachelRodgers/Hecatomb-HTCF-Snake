@@ -57,9 +57,7 @@ rule aa_taxonomy_search_alignment:
 		"""
 		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
-			-a \
-			--start-sens 1 \
-			--sens-steps 3 \
+			-a 1 \
 			-s 7 \
 			--search-type 2 \
 			--tax-output-mode 1 \
@@ -108,7 +106,7 @@ rule aa_taxonomy_search_lca:
 		"""
 		{MMSEQS} taxonomy \
 			{input.queryDB} {input.targetDB} {params.taxaDB} {output.tmp} \
-			-a \
+			-a 1 \
 			-s 7 \
 			--search-type 2 \
 			--tax-lineage 1 \
@@ -149,7 +147,7 @@ rule aa_extract_all_potential_viruses:
 		mem_mb=1000
 	shell:
 		"""
-		grep 'Viruses:' {input} | cut -f1,5 | sed 's/phi14:2/phi14_2/g' | sed 's/:/\t/g' | sort -n -k1 > {output}
+		grep 'Viruses;' {input} | cut -f1,5 | sed 's/phi14:2/phi14_2/g' | sed 's/:/\t/g' | sort -n -k1 > {output}
 		"""
 
 rule aa_extract_phage_lineages_for_R_grep:
