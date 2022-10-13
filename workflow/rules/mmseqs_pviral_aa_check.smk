@@ -49,6 +49,7 @@ rule aacheck_taxonomy_search_alignment:
 			-s 7 \
 			--search-type 2 \
 			--tax-output-mode 1 \
+			--lca-mode 4 \
 			--threads {threads}
 		"""
 
@@ -132,7 +133,7 @@ rule aacheck_taxonomy_search_lca:
 			-a \
 			-s 7 \
 			--search-type 2 \
-			--tax-lineage true \
+			--tax-lineage 1 \
 			--lca-ranks "superkingdom,phylum,class,order,family,genus,species" \
 			--threads {threads}
 		"""
@@ -173,7 +174,7 @@ rule aacheck_extract_nonphage_viral_lineages_for_R_grep:
 		mem_mb=1000
 	shell:
 		"""
-		grep -v 'Bacteria:' {input.viruses} | grep 'Viruses:' | grep -v -f {input.phagetax} | cut -f1,5 | sed 's/:/\t/g' | sort -n -k1 > {output}
+		grep -v 'Bacteria;' {input.viruses} | grep 'Viruses;' | grep -v -f {input.phagetax} | cut -f1,9 | sed 's/;/\t/g' | sort -n -k1 > {output}
 		"""
 
 rule aacheck_extract_nonphage_viral_lineages_for_R_cut:
