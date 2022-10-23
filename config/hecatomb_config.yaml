@@ -1,13 +1,13 @@
 ---
 Patterns:
-  Read1Identifiers: ["_R1_"]
-  Read2Identifiers: ["_R2_"]
+  Read1Identifiers: ["_R1"]
+  Read2Identifiers: ["_R2"]
   ReadExtensions: [".fastq.gz"]
 
 Paths:
-  Reads: data
+  Reads: data/fecal_tx_subset
   Contaminants: /ref/lhlab/data/hecatomb_databases/contaminants
-  Host: /ref/lhlab/data/hecatomb_databases/human_masked
+  Host: /ref/lhlab/data/hecatomb_databases/mouse
   Bacteria: /ref/lhlab/data/hecatomb_databases/bac_giant/unique_species
   TargetMMseqsAA: /ref/lhlab/data/hecatomb_databases/virus_uniprot/targetDB
   TargetMMseqsAACheck: /ref/lhlab/data/hecatomb_databases/uni_plus_virus/targetDB
@@ -21,7 +21,7 @@ DatabaseFiles:
 
 Tools:
   BBTools: /ref/mtblab/software/bbmap_38.96/bbmap/
-  R: eval $( spack load --sh r@3.6.3 )
+  R: eval $( spack load --sh r@4.1.1 )
   Seqkit: eval $( spack load --sh seqkit@0.10.1 )
   Pullseq: /ref/mtblab/software/pullseq
   MMseqs: /ref/mtblab/software/mmseqs/bin/mmseqs
