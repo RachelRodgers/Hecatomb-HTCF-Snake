@@ -21,7 +21,7 @@ DatabaseFiles:
 
 Tools:
   BBTools: /ref/mtblab/software/bbmap_38.96/bbmap/
-  R: eval $( spack load --sh r@4.1.1 )
+  R: eval $( spack load --sh r@4.2.2 )
   Seqkit: eval $( spack load --sh seqkit@0.10.1 )
   Pullseq: /ref/mtblab/software/pullseq
   MMseqs: /ref/mtblab/software/mmseqs/bin/mmseqs
