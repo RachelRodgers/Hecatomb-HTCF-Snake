@@ -20,7 +20,7 @@ DatabaseFiles:
   NCBIAccession: /ref/lhlab/data/hecatomb_databases/taxonomizr/accessionTaxa.sql
 
 Tools:
-  BBTools: /ref/mtblab/software/bbmap_38.96/bbmap/
+  BBTools: eval $( spack load --sh bbmap@38.63 )
   R: eval $( spack load --sh r@4.2.2 )
   Seqkit: eval $( spack load --sh seqkit@0.10.1 )
   Pullseq: /ref/mtblab/software/pullseq
