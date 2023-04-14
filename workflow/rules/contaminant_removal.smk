@@ -15,7 +15,8 @@ rule clumpify:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}clumpify.sh \
+		{BBTOOLS}
+		clumpify.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			out={output.r1} \
@@ -40,7 +41,8 @@ rule remove_leftmost_primerB:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			ref={input.primers} \
@@ -71,7 +73,8 @@ rule remove_3prime_contaminant:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			ref={input.primers} \
@@ -101,7 +104,8 @@ rule remove_primer_free_adapter:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			ref={input.primers} \
@@ -131,7 +135,8 @@ rule remove_adapter_free_primer:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			ref={input.primers} \
@@ -161,7 +166,8 @@ rule remove_vector_contamination:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			ref={input.primers} \
@@ -190,7 +196,8 @@ rule host_removal:
 		mem_mb=50000
 	shell:
 		"""
-		bash {BBTOOLS}bbmap.sh \
+		{BBTOOLS}
+		bbmap.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			outu={output.unmapped} \
@@ -215,7 +222,8 @@ rule repair:
 		r2 = temp(os.path.join("results", "QC", "step_6", PATTERN_R2 + ".s6.out.fastq"))
 	shell:
 		"""
-		bash {BBTOOLS}repair.sh \
+		{BBTOOLS}
+		repair.sh \
 			in={input.unmapped} \
 			out={output.r1} \
 			out2={output.r2} \
@@ -237,7 +245,8 @@ rule trim_low_quality:
 	threads: 4
 	shell:
 		"""
-		bash {BBTOOLS}bbduk.sh \
+		{BBTOOLS}
+		bbduk.sh \
 			in={input.r1} \
 			in2={input.r2} \
 			out={output.r1} \
@@ -328,7 +337,8 @@ rule remove_bacteria:
 		mem_mb=50000
 	shell:
 		"""
-		bash {BBTOOLS}bbmap.sh \
+		{BBTOOLS}
+		bbmap.sh \
 			in={input.r1combo} \
 			path={input.reference} \
 			outm={output.mapped} \
